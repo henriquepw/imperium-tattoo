@@ -1,25 +1,29 @@
 package main
 
 import (
-	"net/http"
-
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
 	"github.com/henriquepw/imperium-tattoo/handler"
-	"github.com/henriquepw/imperium-tattoo/view"
 )
 
 func main() {
-	r := echo.New()
+	app := echo.New()
 
-	r.Static("/static", "static")
-	r.Use(middleware.Logger())
-	r.Use(middleware.Recover())
+	app.Static("/static", "static")
+	app.Use(middleware.Logger())
+	app.Use(middleware.Recover())
 
-	r.GET("/", func(ctx echo.Context) error {
-		return handler.Render(ctx, http.StatusOK, view.Test())
+	app.GET("/", func(c echo.Context) error {
+		return c.Redirect(303, "/login")
 	})
 
-	r.Logger.Fatal(r.Start(":3333"))
+	authHandle := handler.AuthHandler{}
+	app.GET("/login", authHandle.Login)
+	app.GET("/logout", authHandle.Logout)
+
+	// Private routes
+	app.Use(authHandle.RequireAuth)
+
+	app.Logger.Fatal(app.Start(":3333"))
 }
