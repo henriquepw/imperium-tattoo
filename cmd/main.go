@@ -1,29 +1,39 @@
 package main
 
 import (
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	"flag"
+	"fmt"
+	"log"
+	"net/http"
+	"os"
 
 	"github.com/henriquepw/imperium-tattoo/handler"
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	app := echo.New()
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Error loading .env file: %s", err)
+		os.Exit(1)
+	}
 
-	app.Static("/static", "static")
-	app.Use(middleware.Logger())
-	app.Use(middleware.Recover())
+	addr := flag.String("addr", ":3334", "the http server address")
+	flag.Parse()
 
-	app.GET("/", func(c echo.Context) error {
-		return c.Redirect(303, "/login")
-	})
+	server := http.NewServeMux()
 
-	authHandle := handler.AuthHandler{}
-	app.GET("/login", authHandle.Login)
-	app.GET("/logout", authHandle.Logout)
+	fs := http.FileServer(http.Dir("./static"))
+	server.Handle("/static/", http.StripPrefix("/static/", fs))
 
-	// Private routes
-	app.Use(authHandle.RequireAuth)
+	authHandler := handler.NewAuthHandler()
+	server.Handle("/", authHandler.Setup())
 
-	app.Logger.Fatal(app.Start(":3333"))
+	err = http.ListenAndServe(*addr, server)
+	if err != nil {
+		log.Fatal(err.Error())
+		os.Exit(1)
+	}
+
+	fmt.Println("Server running on port: ", *addr)
 }

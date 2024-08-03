@@ -1,5 +1,10 @@
-tmp/
+static/output.css
+
+.tmp/
+.run-app
 
 .DS_Store
+fly.toml
 
-static/output.css
+.env*
+!.env.example

@@ -8,19 +8,19 @@ help: Makefile
 	@sed -n 's/^##//p' $< | column -t -s ':' |  sed -e 's/^/ /'
 	@echo
 
-## test: run unit tests
-.PHONY: test
-test:
-	go test -race -cover $(PACKAGES)
+## setup: install packages needed
+.PHONY: setup
+setup:
+	go install github.com/air-verse/air@latest github.com/a-h/templ/cmd/templ@latest
 
 ## build: build a binary
 .PHONY: build
-build: test
-	go build -o ./app -v
+build:
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./run-app ./cmd/main.go
 
 ## docker-build: build project into a docker container image
 .PHONY: docker-build
-docker-build: test
+docker-build:
 	GOPROXY=direct docker buildx build -t ${name} .
 
 ## docker-run: run project in a container
@@ -29,10 +29,10 @@ docker-run:
 	docker run -it --rm -p 8080:8080 ${name}
 
 ## start: build and run local project
-.PHONY: dev
-start: dev
+.PHONY: start
+start:
 	air
-
+	
 ## css: build tailwindcss
 .PHONY: css
 css:
