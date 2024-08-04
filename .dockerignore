@@ -1,29 +1,26 @@
+# flyctl launch added from .gitignore
 # binaries for programs and plugins
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
+**/*.exe
+**/*.exe~
+**/*.dll
+**/*.so
+**/*.dylib
 
 # test binary, built with "go test -c"
-*.test
+**/*.test
 
 # output of the go coverage tool, specifically when used with LiteIDE
-*.out
+**/*.out
 
 # go workspace file
-go.work
-.tmp/
-.testdata/
-
-# .env file
-.env*
-!.env.example
+**/go.work
+**/.tmp
+**/.testdata
 
 # project build
-main
-*templ.go
-static/output.css
+**/main
+**/*templ.go
+**/static/output.css
 
 # mac stuff
-.DS_Store
+**/.DS_Store
