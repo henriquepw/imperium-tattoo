@@ -1,25 +1,16 @@
 package main
 
 import (
-	"flag"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 
 	"github.com/henriquepw/imperium-tattoo/handler"
-	"github.com/joho/godotenv"
+	_ "github.com/joho/godotenv/autoload"
 )
 
 func main() {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatalf("Error loading .env file: %s", err)
-		os.Exit(1)
-	}
-
-	addr := flag.String("addr", ":3334", "the http server address")
-	flag.Parse()
+	addr := ":" + os.Getenv("PORT")
 
 	server := http.NewServeMux()
 
@@ -29,11 +20,10 @@ func main() {
 	authHandler := handler.NewAuthHandler()
 	server.Handle("/", authHandler.Setup())
 
-	err = http.ListenAndServe(*addr, server)
+	err := http.ListenAndServe(addr, server)
 	if err != nil {
-		log.Fatal(err.Error())
-		os.Exit(1)
+		panic(fmt.Sprintf("cannot start server: %s", err))
 	}
 
-	fmt.Println("Server running on port: ", *addr)
+	fmt.Println("Server running on port: ", addr)
 }

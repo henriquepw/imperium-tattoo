@@ -1,10 +1,36 @@
-static/output.css
+# binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
 
+# test binary, built with "go test -c"
+*.test
+
+# output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# go workspace file
+go.work
 .tmp/
-.run-app
+.testdata/
 
-.DS_Store
-fly.toml
+# IDE specific files
+.vscode
+.idea
 
+# .env file
 .env*
 !.env.example
+
+# project build
+main
+*templ.go
+static/output.css
+
+# deploy
+fly.toml
+
+# mac stuff
+.DS_Store

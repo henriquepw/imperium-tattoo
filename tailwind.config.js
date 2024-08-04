@@ -1,12 +1,14 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./view/**/*.{html,js,templ,go}",
+    "./static/**/*",
+    "!./static/css/output.",
+    "./view/**/*.{html,js,templ}",
   ],
   theme: {
     extend: {},
     fontFamily: {
-      sans: ["Raleway"],
+      sans: ["raleway"],
     },
   },
   plugins: [],

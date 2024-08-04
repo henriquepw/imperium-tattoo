@@ -4,24 +4,24 @@
 
 @layer base {
   @font-face {
-    font-family: Raleway;
+    font-family: raleway;
     font-weight: 400;
     font-style: normal;
-    src: url(/static/font/Raleway-Regular.ttf);
+    src: url(/static/font/raleway-regular.ttf);
   }
 
   @font-face {
-    font-family: Raleway;
+    font-family: raleway;
     font-weight: 500;
     font-style: medium;
-    src: url(/static/font/Raleway-Medium.ttf);
+    src: url(/static/font/raleway-medium.ttf);
   }
 
   @font-face {
-    font-family: Raleway;
+    font-family: raleway;
     font-weight: 700;
     font-style: bold;
-    src: url(/static/font/Raleway-Bold.ttf);
+    src: url(/static/font/raleway-bold.ttf);
   }
 }
 

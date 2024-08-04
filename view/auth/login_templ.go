@@ -8,7 +8,10 @@ package auth
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "github.com/henriquepw/imperium-tattoo/view/layout"
+import (
+	"github.com/henriquepw/imperium-tattoo/view/layout"
+	"github.com/henriquepw/imperium-tattoo/view/ui"
+)
 
 func LoginForm() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -40,7 +43,19 @@ func LoginForm() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<section class=\"flex w-full h-screen\"><form class=\"flex flex-col gap-4 m-auto p-4 rounded border\"><h1 class=\"font-sans text-white text-2xl\">Imperium Tattoo</h1><input placeholder=\"username\"> <input placeholder=\"password\"></form></section>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<section class=\"flex w-full h-screen\"><form class=\"flex flex-col gap-4 m-auto p-4 rounded border\"><h1 class=\"font-sans text-white text-2xl\">Imperium Tattoo</h1>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = ui.TextInput(ui.TextInputProps{Name: "username", Label: "Usuário", Placeholder: "digite seu usuário"}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = ui.TextInput(ui.TextInputProps{Name: "password", Label: "Senha", Placeholder: "digite sua senha"}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</form></section>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
