@@ -43,21 +43,41 @@ clean:
 	@rm -f main
 
 
-# Live Reload
-.PHONY: watch
-watch:
-	@if command -v air > /dev/null; then \
-	    air; \
-	    echo "Watching...";\
-	else \
-	    read -p "Go's 'air' is not installed on your machine. Do you want to install it? [Y/n] " choice; \
-	    if [ "$$choice" != "n" ] && [ "$$choice" != "N" ]; then \
-	        make setup \
-	        air; \
-	        echo "Watching...";\
-	    else \
-	        echo "You chose not to install air. Exiting..."; \
-	        exit 1; \
-	    fi; \
-	fi
+# run templ generation in watch mode to detect all .templ files and 
+# re-create _templ.txt files on change, then send reload event to browser. 
+# Default url: http://localhost:7331
+watch/templ:
+	templ generate --watch --proxy="http://localhost:3000" --open-browser=false -v
 
+
+# run air to detect any go file changes to re-build and re-run the server.
+watch/server:
+	air \
+	--build.cmd "go build -o .tmp/main cmd/main.go" \
+	--build.bin ".tmp/main" \
+	--build.delay "100" \
+	--build.exclude_dir "node_modules" \
+	--build.include_ext "go" \
+	--build.stop_on_error "false" \
+	--misc.clean_on_exit true
+
+
+# run tailwindcss to generate the styles.css bundle in watch mode.
+watch/tailwind:
+	tailwindcss -i static/css/input.css -o static/css/output.css --minify --watch
+
+
+# watch for any js or css change in the assets/ folder, then reload the browser via templ proxy.
+watch/sync_assets:
+	air \
+	--build.cmd "templ generate --notify-proxy" \
+	--build.bin "true" \
+	--build.delay "100" \
+	--build.exclude_dir "" \
+	--build.include_dir "static" \
+	--build.include_ext "js,css"
+
+
+# start all 4 watch processes in parallel.
+watch: 
+	make -j4 watch/templ watch/server watch/tailwind watch/sync_assets

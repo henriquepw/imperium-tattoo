@@ -1,0 +1,4 @@
+<input name=\"
+\" placeholder=\"
+\" value=\"
+\" class=\"rounded px-2 h-10 bg-neutral-600 placeholder:text-neutral-400\">

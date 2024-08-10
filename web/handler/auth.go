@@ -19,7 +19,6 @@ func (a AuthHandler) Setup() http.Handler {
 
 	router.HandleFunc("GET /login", a.LoginPage)
 	router.HandleFunc("POST /login", a.Login)
-
 	router.HandleFunc("/logout", a.Logout)
 
 	return router

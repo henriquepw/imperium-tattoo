@@ -1,0 +1,5 @@
+<div class=\"flex flex-col text-white\"><label class=\"font-medium\">
+</label>
+<span class=\"font-medium text-red-500\">
+</span>
+</div>

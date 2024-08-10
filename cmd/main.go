@@ -14,11 +14,16 @@ func main() {
 
 	server := http.NewServeMux()
 
-	fs := http.FileServer(http.Dir("./static"))
-	server.Handle("/static/", http.StripPrefix("/static/", fs))
+	homeHandler := handler.NewHomeHandler()
+	server.HandleFunc("/", homeHandler.HomePage)
 
 	authHandler := handler.NewAuthHandler()
-	server.Handle("/", authHandler.Setup())
+	server.HandleFunc("GET /login", authHandler.LoginPage)
+	server.HandleFunc("POST /login", authHandler.Login)
+	server.HandleFunc("/logout", authHandler.Logout)
+
+	fs := http.FileServer(http.Dir("./static"))
+	server.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	err := http.ListenAndServe(addr, server)
 	if err != nil {
