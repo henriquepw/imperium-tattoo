@@ -2,11 +2,15 @@ package ui
 
 type FormFieldProps struct {
 	Label string
+	Error string
 }
 
 templ FormField(props FormFieldProps) {
 	<div class="flex flex-col text-white">
 		<label class="font-medium">{ props.Label }</label>
 		{ children... }
+		if props.Error != "" {
+			<span class="font-medium text-red-500">{ props.Error }</span>
+		}
 	</div>
 }

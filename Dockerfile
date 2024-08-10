@@ -9,7 +9,7 @@ RUN go install github.com/a-h/templ/cmd/templ@latest && templ generate
 
 RUN go build -o main ./cmd/main.go
 
-FROM scratch
+FROM alpine:latest
 WORKDIR /app
 
 COPY --from=builder app/static/ ./static/

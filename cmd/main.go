@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/henriquepw/imperium-tattoo/handler"
+	"github.com/henriquepw/imperium-tattoo/web/handler"
 	_ "github.com/joho/godotenv/autoload"
 )
 
