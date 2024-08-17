@@ -10,6 +10,7 @@ templ Dashbaord(title, route string) {
 		>
 			<header class="flex justify-between items-center px-4 h-12 row-span-1 col-start-1 col-end-3 border-b w-full">
 				<span class="text-accent-9">LOGO</span>
+				<button @click="theme = theme === 'dark' ? 'light' : 'dark'">Thema</button>
 				<nav class="flex list-none gap-4">
 					<a href="/" class={ templ.KV("text-accent-10", route == "home") }>Home</a>
 					<!-- <a href="/clients" class={ templ.KV("text-accent-10", route == "clients") }>Clientes</a> -->

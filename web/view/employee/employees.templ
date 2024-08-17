@@ -11,13 +11,13 @@ templ EmployeesPage() {
 			@ui.Breadcrumb([]ui.BreadcrumbItem{
 				{Label: "Profissinais", Href: "/employees"},
 			})
-			<h1 class="text-3xl text-gray-12 font-bold mb-4">Novo Profissinal</h1>
-			<section class="">
-				@ui.TextInput(ui.TextInputProps{})
+			<div class="flex gap-6 justify-between flex-wrap">
+				<h1 class="text-3xl text-gray-12 font-bold mb-4">Novo Profissinal</h1>
 				@ui.Link(ui.LinkProps{Href: "employees/create"}) {
-					Novo Profissional
+					<i data-feather="plus"></i>
+					<span>Novo Profissional</span>
 				}
-			</section>
+			</div>
 			<section>
 				EMPLOYEES
 			</section>

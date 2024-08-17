@@ -18,7 +18,7 @@ templ Breadcrumb(items []BreadcrumbItem) {
 				href={ templ.URL(item.Href) }
 				data-active={ strconv.FormatBool(i == len(items)-1) }
 				class="
-          transition-colors leading-none hover:text-accent-9 outline-none rounded
+          transition-colors leading-none hover:text-accent-9 outline-none rounded-sm
           focus-visible:ring-2 focus-visible:ring-accent-10 ring-offset-2 ring-offset-gray-1
           data-[active=true]:text-accent-10 data-[active=true]:pointer-events-none
           data-[active=false]:hover:underline data-[active=false]:cursor-pointer
