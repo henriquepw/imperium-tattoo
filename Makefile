@@ -79,5 +79,6 @@ watch/sync_assets:
 
 
 # start all 4 watch processes in parallel.
+.PHONY: build
 watch: 
 	make -j4 watch/templ watch/server watch/tailwind watch/sync_assets

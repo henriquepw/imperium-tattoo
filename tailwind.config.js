@@ -26,7 +26,7 @@ module.exports = {
       colors: {
         accent: generateScale("orange"),
         gray: generateScale("sand"),
-      }
+      },
     },
     fontFamily: {
       sans: ["raleway"],

@@ -1,3 +1,0 @@
-<!doctype html><html lang=\"pt-BR\" class=\"dark\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width\"><title>
- | Imperium Tattoo</title><link href=\"static/css/output.css\" rel=\"stylesheet\"><script src=\"static/js/htmx.min.js\"></script></head><body class=\"bg-gray-1 text-gray-12\">
-</body></html>

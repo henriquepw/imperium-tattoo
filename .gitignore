@@ -23,6 +23,7 @@ go.work
 # project build
 main
 *templ.go
+*.txt
 static/output.css
 
 # mac stuff

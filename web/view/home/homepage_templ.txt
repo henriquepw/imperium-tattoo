@@ -1,1 +1,1 @@
-<main><aside>Sidebar</aside><section>TODO</section></main>
+<div>MAIN</div>

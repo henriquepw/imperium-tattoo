@@ -1,2 +1,0 @@
-<button class=\"h-10 rounded bg-orange-500 text-center\">
-</button>
