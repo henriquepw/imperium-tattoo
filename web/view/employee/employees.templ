@@ -1,0 +1,22 @@
+package employee
+
+import (
+	"github.com/henriquepw/imperium-tattoo/web/view/layout"
+	"github.com/henriquepw/imperium-tattoo/web/view/ui"
+)
+
+templ EmployeesPage() {
+	@layout.Dashbaord("Painel", "employees") {
+		<div>
+			<section class="">
+				@ui.TextInput(ui.TextInputProps{})
+				<a href="employees/create" class="h-10 px-4 rounded bg-orange-500 text-center">
+					Novo Profissional
+				</a>
+			</section>
+			<section>
+				EMPLOYEES
+			</section>
+		</div>
+	}
+}

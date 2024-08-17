@@ -6,6 +6,7 @@ type TextInputProps struct {
 	Label       string
 	Value       string
 	Error       string
+	Class       string
 }
 
 templ TextInput(props TextInputProps) {
@@ -14,7 +15,7 @@ templ TextInput(props TextInputProps) {
 			name={ props.Name }
 			placeholder={ props.Placeholder }
 			value={ props.Value }
-			class="rounded px-2 h-10 bg-neutral-600 placeholder:text-neutral-400"
+			class={ "rounded px-2 h-10 bg-neutral-600 placeholder:text-neutral-400" + props.Class }
 		/>
 	}
 }

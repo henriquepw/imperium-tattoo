@@ -1,0 +1,31 @@
+package layout
+
+templ Dashbaord(title, route string) {
+	@Base(title) {
+		<div
+			class="
+          min-h-svh h-full w-full max-w-[90rem] mx-auto
+          grid grid-cols-[auto_1fr] grid-rows-[auto_1fr]
+        "
+		>
+			<header class="flex justify-between items-center px-4 h-12 row-span-1 col-start-1 col-end-3 border-b w-full">
+				<span class="text-accent-9">LOGO</span>
+				<nav class="flex list-none gap-4">
+					<a href="/" class={ templ.KV("text-accent-10", route == "home") }>Home</a>
+					<a href="/clients" class={ templ.KV("text-accent-10", route == "clients") }>Clientes</a>
+					<a href="/employees" class={ templ.KV("text-accent-10", route == "employees") }>Profissionais</a>
+					<a href="/calendar" class={ templ.KV("text-accent-10", route == "calendar") }>Calendário</a>
+				</nav>
+				<span class="text-accent-9">
+					USER
+				</span>
+			</header>
+			<!-- <aside class="row-span-2 w-60 border-r p-4"> -->
+			<!-- 	SIDEBAR -->
+			<!-- </aside> -->
+			<main class="col-end-3 row-span-2 w-full p-4">
+				{ children... }
+			</main>
+		</div>
+	}
+}

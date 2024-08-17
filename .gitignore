@@ -24,7 +24,7 @@ go.work
 main
 *templ.go
 *.txt
-static/output.css
+static/css/output.css
 
 # mac stuff
 .DS_Store
