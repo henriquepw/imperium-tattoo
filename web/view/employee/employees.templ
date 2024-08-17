@@ -8,11 +8,15 @@ import (
 templ EmployeesPage() {
 	@layout.Dashbaord("Painel", "employees") {
 		<div>
+			@ui.Breadcrumb([]ui.BreadcrumbItem{
+				{Label: "Profissinais", Href: "/employees"},
+			})
+			<h1 class="text-3xl text-gray-12 font-bold mb-4">Novo Profissinal</h1>
 			<section class="">
 				@ui.TextInput(ui.TextInputProps{})
-				<a href="employees/create" class="h-10 px-4 rounded bg-orange-500 text-center">
+				@ui.Link(ui.LinkProps{Href: "employees/create"}) {
 					Novo Profissional
-				</a>
+				}
 			</section>
 			<section>
 				EMPLOYEES

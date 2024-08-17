@@ -29,12 +29,15 @@ func main() {
 	server.HandleFunc("POST /login", authHandler.Login)
 	server.HandleFunc("/logout", authHandler.Logout)
 
-	fs := http.FileServer(http.Dir("./static"))
 	server.Handle("/static/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
-		w.Header().Set("Pragma", "no-cache")
-		w.Header().Set("Expires", "0")
-		http.StripPrefix("/static/", fs).ServeHTTP(w, r)
+		// Clean cache in dev mode
+		if os.Getenv("APP_ENV") != "production" {
+			w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+			w.Header().Set("Pragma", "no-cache")
+			w.Header().Set("Expires", "0")
+		}
+
+		http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))).ServeHTTP(w, r)
 	}))
 
 	err := http.ListenAndServe(addr, server)

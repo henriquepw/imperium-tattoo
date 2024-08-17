@@ -12,9 +12,9 @@ templ Dashbaord(title, route string) {
 				<span class="text-accent-9">LOGO</span>
 				<nav class="flex list-none gap-4">
 					<a href="/" class={ templ.KV("text-accent-10", route == "home") }>Home</a>
-					<a href="/clients" class={ templ.KV("text-accent-10", route == "clients") }>Clientes</a>
+					<!-- <a href="/clients" class={ templ.KV("text-accent-10", route == "clients") }>Clientes</a> -->
 					<a href="/employees" class={ templ.KV("text-accent-10", route == "employees") }>Profissionais</a>
-					<a href="/calendar" class={ templ.KV("text-accent-10", route == "calendar") }>Calendário</a>
+					<!-- <a href="/calendar" class={ templ.KV("text-accent-10", route == "calendar") }>Calendário</a> -->
 				</nav>
 				<span class="text-accent-9">
 					USER
@@ -23,7 +23,7 @@ templ Dashbaord(title, route string) {
 			<!-- <aside class="row-span-2 w-60 border-r p-4"> -->
 			<!-- 	SIDEBAR -->
 			<!-- </aside> -->
-			<main class="col-end-3 row-span-2 w-full p-4">
+			<main class="col-end-3 row-span-2 w-full p-8">
 				{ children... }
 			</main>
 		</div>

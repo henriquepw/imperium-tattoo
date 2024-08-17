@@ -26,6 +26,10 @@ module.exports = {
       colors: {
         accent: generateScale("orange"),
         gray: generateScale("sand"),
+        info: generateScale("cyan"),
+        error: generateScale("tomato"),
+        success: generateScale("green"),
+        warning: generateScale("amber"),
       },
     },
     fontFamily: {

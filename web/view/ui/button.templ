@@ -1,10 +1,27 @@
 package ui
 
 type ButtonProps struct {
+	Class string
+	Type  string
 }
 
-templ Button() {
-	<button class="h-10 px-4 rounded bg-orange-500 text-center">
+const baseStyle = "flex items-center justify-center gap-1.5 h-9 px-3 rounded bg-accent-9"
+const fontStyle = "font-bold text-gray-12 text-center"
+const hoverStyle = "transition-all hover:bg-accent-10 active:bg-accent-11 active:scale-95"
+
+templ Button(props ButtonProps) {
+	<button type={ props.Type } class={ baseStyle, fontStyle, hoverStyle, props.Class }>
 		{ children... }
 	</button>
+}
+
+type LinkProps struct {
+	Class string
+	Href  string
+}
+
+templ Link(props LinkProps) {
+	<a href={ templ.URL(props.Href) } class={ baseStyle, fontStyle, hoverStyle, props.Class }>
+		{ children... }
+	</a>
 }

@@ -1,0 +1,11 @@
+package ui
+
+type CardProps struct {
+	Class string
+}
+
+templ Card(props CardProps) {
+	<div class={ "bg-gray-2 border border-gray-6 rounded-lg p-4" , props.Class }>
+		{ children... }
+	</div>
+}

@@ -6,8 +6,13 @@ import (
 )
 
 templ EmployeeCreatePage() {
-	@layout.Dashbaord("Painel", "employees") {
+	@layout.Dashbaord("Painel", "employees/create") {
 		<section>
+			@ui.Breadcrumb([]ui.BreadcrumbItem{
+				{Label: "Profissinais", Href: "/employees"},
+				{Label: "Novo", Href: "/employees/create"},
+			})
+			<h1 class="text-3xl text-gray-12 font-bold mb-4">Novo Profissinal</h1>
 			@EmployeeCreateForm()
 		</section>
 	}
@@ -19,21 +24,22 @@ type EmployeeCreateFormProps struct {
 }
 
 templ EmployeeCreateForm() {
-	<form class="flex flex-col gap-4">
-		@ui.TextInput(ui.TextInputProps{
-			Name:  "name",
-			Label: "Nome",
-		})
-		@ui.TextInput(ui.TextInputProps{
-			Name:  "email",
-			Label: "Email",
-		})
-		@ui.TextInput(ui.TextInputProps{
-			Name:  "password",
-			Label: "Senha",
-		})
-		<button class="h-10 rounded bg-orange-500 text-center uppercase" type="submit">
-			Criar
-		</button>
-	</form>
+	@ui.Card(ui.CardProps{}) {
+		<form class="flex flex-col gap-4">
+			@ui.TextInput(ui.TextInputProps{
+				Name:        "name",
+				Label:       "Nome",
+				Placeholder: "Nome do Profissinal",
+			})
+			@ui.TextInput(ui.TextInputProps{
+				Name:        "email",
+				Label:       "Email",
+				Placeholder: "exemplo@gmail.com",
+			})
+			@ui.Button(ui.ButtonProps{Type: "submit", Class: "ml-auto"}) {
+				<i data-feather="save" class="h-5 w-5"></i>
+				<span>Criar</span>
+			}
+		</form>
+	}
 }

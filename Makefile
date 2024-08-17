@@ -19,7 +19,7 @@ setup:
 build:
 	@echo "Building..."
 	@templ generate
-	@tailwindcss -i static/css/input.css -o static/css/output.css
+	@tailwindcss -i static/css/input.css -o static/css/output.css --minify
 	@go build -o main cmd/main.go
 
 
@@ -43,11 +43,12 @@ clean:
 	@rm -f main
 
 
+
 # run templ generation in watch mode to detect all .templ files and 
 # re-create _templ.txt files on change, then send reload event to browser. 
 # Default url: http://localhost:7331
 watch/templ:
-	templ generate --watch --proxy="http://localhost:3000" --open-browser=false -v
+	templ generate --watch --proxy="http://localhost:3000" --open-browser=false
 
 
 # run air to detect any go file changes to re-build and re-run the server.
@@ -56,7 +57,7 @@ watch/server:
 	--build.cmd "go build -o .tmp/main cmd/main.go" \
 	--build.bin ".tmp/main" \
 	--build.delay "100" \
-	--build.exclude_dir "node_modules" \
+	--build.exclude_dir ".tmp" \
 	--build.include_ext "go" \
 	--build.stop_on_error "false" \
 	--misc.clean_on_exit true
@@ -74,11 +75,12 @@ watch/sync_assets:
 	--build.bin "true" \
 	--build.delay "100" \
 	--build.exclude_dir "" \
+	--build.exclude_regex "output.css" \
 	--build.include_dir "static" \
 	--build.include_ext "js,css"
 
 
 # start all 4 watch processes in parallel.
-.PHONY: build
+.PHONY: watch
 watch: 
 	make -j4 watch/templ watch/server watch/tailwind watch/sync_assets
