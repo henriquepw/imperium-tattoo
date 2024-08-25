@@ -1,16 +1,27 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 	"os"
 
+	"github.com/henriquepw/imperium-tattoo/database"
 	"github.com/henriquepw/imperium-tattoo/web/handler"
+
 	_ "github.com/joho/godotenv/autoload"
+	_ "github.com/tursodatabase/libsql-client-go/libsql"
 )
 
 func main() {
 	addr := ":" + os.Getenv("PORT")
+
+	db, err := sql.Open("libsql", os.Getenv("DB_URL"))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to open db: %s", err)
+		os.Exit(1)
+	}
+	defer db.Close()
 
 	server := http.NewServeMux()
 
@@ -20,9 +31,10 @@ func main() {
 	clientHandler := handler.NewClientHandler()
 	server.HandleFunc("GET /clients", clientHandler.ClientsPage)
 
-	employeeHandler := handler.NewEmployeeHandler()
+	employeeHandler := handler.NewEmployeeHandler(database.NewEmployeeRepo(db))
 	server.HandleFunc("GET /employees", employeeHandler.EmployeesPage)
 	server.HandleFunc("GET /employees/create", employeeHandler.EmployeeCreatePage)
+	server.HandleFunc("POST /employees/create", employeeHandler.EmployeeCreateAction)
 
 	authHandler := handler.NewAuthHandler()
 	server.HandleFunc("GET /login", authHandler.LoginPage)
@@ -40,7 +52,7 @@ func main() {
 		http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))).ServeHTTP(w, r)
 	}))
 
-	err := http.ListenAndServe(addr, server)
+	err = http.ListenAndServe(addr, server)
 	if err != nil {
 		panic(fmt.Sprintf("cannot start server: %s", err))
 	}

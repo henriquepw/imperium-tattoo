@@ -1,40 +1,55 @@
 package employee
 
 import (
+	"github.com/henriquepw/imperium-tattoo/web/types"
 	"github.com/henriquepw/imperium-tattoo/web/view/layout"
 	"github.com/henriquepw/imperium-tattoo/web/view/ui"
 )
 
 templ EmployeeCreatePage() {
-	@layout.Dashbaord("Painel", "employees/create") {
+	@layout.Dashbaord("Novo Profissional", "employees") {
 		<section>
-			@ui.Breadcrumb([]ui.BreadcrumbItem{
-				{Label: "Profissinais", Href: "/employees"},
-				{Label: "Novo", Href: "/employees/create"},
-			})
-			<h1 class="text-3xl text-gray-12 font-bold mb-4">Novo Profissinal</h1>
-			@EmployeeCreateForm()
+			@layout.PageHeader(
+				"Novo Profissional",
+				[]ui.BreadcrumbItem{
+					{Label: "Profissinais", Href: "/employees"},
+					{Label: "Novo", Href: "/employees/create"},
+				},
+				"/employees",
+			)
+			@EmployeeCreateForm(EmployeeCreateFormProps{})
 		</section>
 	}
 }
 
 type EmployeeCreateFormProps struct {
-	Values map[string]string
+	Values types.EmployeeCreateDTO
 	Errors map[string]string
 }
 
-templ EmployeeCreateForm() {
-	@ui.Card(ui.CardProps{}) {
+templ EmployeeCreateForm(props EmployeeCreateFormProps) {
+	@ui.Card() {
 		<form class="flex flex-col gap-4">
 			@ui.TextInput(ui.TextInputProps{
 				Name:        "name",
 				Label:       "Nome",
 				Placeholder: "Nome do Profissinal",
+				Value:       props.Values.Name,
+				Error:       props.Errors["name"],
 			})
 			@ui.TextInput(ui.TextInputProps{
 				Name:        "email",
 				Label:       "Email",
 				Placeholder: "exemplo@gmail.com",
+				Value:       props.Values.Email,
+				Error:       props.Errors["email"],
+			})
+			@ui.TextInput(ui.TextInputProps{
+				Name:        "roles",
+				Label:       "Cargo",
+				Placeholder: "Admin",
+				Value:       props.Values.Roles,
+				Error:       props.Errors["roles"],
 			})
 			@ui.Button(ui.ButtonProps{Type: "submit", Class: "ml-auto"}) {
 				<i data-feather="save" class="h-5 w-5"></i>
