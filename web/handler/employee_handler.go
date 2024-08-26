@@ -18,11 +18,13 @@ func NewEmployeeHandler(repo database.EmployeeRepository) EmployeeHandler {
 }
 
 func (h EmployeeHandler) EmployeesPage(w http.ResponseWriter, r *http.Request) {
-	web.Render(w, r, http.StatusOK, employee.EmployeesPage())
+	boosted := r.Header.Get("HX-Boosted") == "true"
+	web.Render(w, r, http.StatusOK, employee.EmployeesPage(boosted))
 }
 
 func (h EmployeeHandler) EmployeeCreatePage(w http.ResponseWriter, r *http.Request) {
-	web.Render(w, r, http.StatusOK, employee.EmployeeCreatePage())
+	boosted := r.Header.Get("HX-Boosted") == "true"
+	web.Render(w, r, http.StatusOK, employee.EmployeeCreatePage(boosted))
 }
 
 func (h EmployeeHandler) EmployeeCreateAction(w http.ResponseWriter, r *http.Request) {

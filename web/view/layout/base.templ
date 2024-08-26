@@ -17,6 +17,6 @@ templ Base(title string) {
 		<body x-data="{ theme: $persist('dark')}" :class="theme" class="dark bg-gray-1 text-gray-12">
 			{ children... }
 		</body>
-		<script>feather.replace()</script>
+		<script>feather.replace(); document.body.addEventListener('htmx:afterSwap', feather.replace);</script>
 	</html>
 }

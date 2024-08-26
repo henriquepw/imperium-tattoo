@@ -6,8 +6,8 @@ import (
 	"github.com/henriquepw/imperium-tattoo/web/view/ui"
 )
 
-templ EmployeeCreatePage() {
-	@layout.Dashbaord("Novo Profissional", "employees") {
+templ EmployeeCreatePage(boosted bool) {
+	@layout.Dashbaord("Novo Profissional", "employees", boosted) {
 		<section>
 			@layout.PageHeader(
 				"Novo Profissional",
@@ -15,7 +15,6 @@ templ EmployeeCreatePage() {
 					{Label: "Profissinais", Href: "/employees"},
 					{Label: "Novo", Href: "/employees/create"},
 				},
-				"/employees",
 			)
 			@EmployeeCreateForm(EmployeeCreateFormProps{})
 		</section>

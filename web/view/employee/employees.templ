@@ -5,12 +5,12 @@ import (
 	"github.com/henriquepw/imperium-tattoo/web/view/ui"
 )
 
-templ EmployeesPage() {
-	@layout.Dashbaord("Profissinais", "employees") {
+templ EmployeesPage(boosted bool) {
+	@layout.Dashbaord("Profissinais", "employees", boosted) {
 		<div>
 			@layout.PageHeader("Profissinais", []ui.BreadcrumbItem{
 				{Label: "Profissinais", Href: "/employees"},
-			}, "") {
+			}) {
 				@ui.Link(ui.LinkProps{Href: "employees/create"}) {
 					<i data-feather="plus"></i>
 				}

@@ -2,80 +2,72 @@ package layout
 
 import "github.com/henriquepw/imperium-tattoo/web/view/ui"
 
-templ Dashbaord(title, route string) {
-	@Base(title) {
-		<div
-			x-data="{ menu: false }"
-			class="min-h-svh h-full w-full max-w-[90rem] mx-auto grid grid-cols-[auto_1fr] grid-rows-[auto_1fr]"
-		>
-			<header
-				class="justify-between items-center px-4 h-12 row-span-1 col-start-1 col-end-3 border-b w-full hidden md:flex"
+templ Dashbaord(title, route string, boosted bool) {
+	if boosted {
+		{ children... }
+	} else {
+		@Base(title) {
+			<div
+				x-data="{ menu: false }"
+				class="min-h-svh h-full w-full max-w-[90rem] mx-auto grid grid-cols-[auto_1fr] grid-rows-[auto_1fr]"
+				hx-boost="true"
+				hx-target="#main"
 			>
-				<span class="text-accent-9">LOGO</span>
-				<button @click="theme = theme === 'dark' ? 'light' : 'dark'">Thema</button>
-				<nav class="flex list-none gap-4">
-					<a href="/" class={ templ.KV("text-accent-10", route == "home") }>Home</a>
-					<a href="/employees" class={ templ.KV("text-accent-10", route == "employees") }>Profissionais</a>
-				</nav>
-				<span class="text-accent-9">
-					USER
-				</span>
-			</header>
-			<main id="main" class="col-end-3 row-span-2 w-full p-4 md:p-8">
-				{ children... }
-			</main>
-			<aside
-				class="fixed bg-agray-1 backdrop-blur-xl inset-0 z-50 transition-opacity duration-300 opacity-0 pointer-events-none"
-				:class="menu ? 'opacity-100 pointer-events-auto':''"
-			>
-				<nav
-					class="h-full w-full max-w-60 bg-gray-2 p-4 shadow shadow-agray-2 -translate-x-[100%] transition-transform duration-500"
-					:class="menu ? 'translate-x-0':''"
+				<main id="main" class="col-end-3 row-span-2 w-full p-4 md:p-8">
+					{ children... }
+				</main>
+				<aside
+					class="fixed bg-agray-1 backdrop-blur-xl inset-0 z-50 transition-opacity duration-300 opacity-0 pointer-events-none"
+					:class="menu ? 'opacity-100 pointer-events-auto':''"
 				>
-					<header class="h-9 mb-4 flex flex-col justify-center">
-						<button
-							class="transition-colors hover:bg-agray-3 active:bg-agray-5 rounded h-8 w-8 flex items-center justify-center -ml-2 md:hidden"
-							@click="menu = !menu"
-						>
-							<i data-feather="x"></i>
-						</button>
-					</header>
-					<ul class="flex flex-col list-none gap-6">
-						@item("Home", "home", "/", route == "home")
-						@item("Clientes", "users", "/clients", route == "clients")
-						@item("Funcionários", "users", "/employees", route == "employees")
-					</ul>
-				</nav>
-			</aside>
-		</div>
+					<nav
+						class="h-full w-full max-w-60 bg-gray-2 p-4 shadow shadow-agray-2 -translate-x-[100%] transition-transform duration-500"
+						:class="menu ? 'translate-x-0':''"
+					>
+						<header class="h-9 mb-4 flex flex-col justify-center">
+							<button
+								class="transition-colors hover:bg-agray-3 active:bg-agray-5 rounded h-8 w-8 flex items-center justify-center -ml-2 md:hidden"
+								@click="menu = !menu"
+							>
+								<i data-feather="x"></i>
+							</button>
+						</header>
+						<ul class="flex flex-col list-none gap-6">
+							@item("Home", "home", "/", route == "home")
+							@item("Clientes", "users", "/clients", route == "clients")
+							@item("Funcionários", "users", "/employees", route == "employees")
+						</ul>
+					</nav>
+				</aside>
+			</div>
+		}
 	}
 }
 
 templ item(label, icon, href string, active bool) {
 	<a
-		hx-get={ href }
-		hx-push-url="true"
-		hx-target="#main"
+		href={ templ.URL(href) }
 		@click="menu = false"
-		class={ "cursor-pointer flex flex-1 gap-4 flex-row items-center" , templ.KV("text-accent-10", active), }
+		class={
+			"cursor-pointer flex flex-1 gap-4 flex-row items-center",
+			templ.KV("text-accent-10", active),
+		}
 	>
 		<i data-feather={ icon }></i>
 		<span class="text-lg">{ label }</span>
 	</a>
 }
 
-templ PageHeader(title string, breadcrumb []ui.BreadcrumbItem, back string) {
+templ PageHeader(title string, breadcrumb []ui.BreadcrumbItem) {
 	<header class="h-9 mb-4 flex flex-col justify-center">
 		@ui.Breadcrumb(breadcrumb)
 		<div class="flex gap-4 justify-between flex-wrap items-center">
-			if back != "" {
-				<button
-					class="transition-colors hover:bg-agray-3 active:bg-agray-5 bg-gray-1 rounded h-8 w-8 flex items-center justify-center -ml-1 md:hidden"
-					@click="menu = !menu"
-				>
-					<i data-feather="menu"></i>
-				</button>
-			}
+			<button
+				class="transition-colors hover:bg-agray-3 active:bg-agray-5 bg-gray-1 rounded h-8 w-8 flex items-center justify-center -ml-1"
+				@click="menu = !menu"
+			>
+				<i data-feather="menu"></i>
+			</button>
 			<h1 class="text-xl md:text-3xl text-gray-12 font-bold flex-1">{ title }</h1>
 			{ children... }
 		</div>
