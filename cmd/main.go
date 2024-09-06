@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -19,8 +20,7 @@ func main() {
 
 	db, err := sql.Open("libsql", os.Getenv("DB_URL"))
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to open db: %s", err)
-		os.Exit(1)
+		log.Fatalf("failed to open db: %s", err.Error())
 	}
 	defer db.Close()
 

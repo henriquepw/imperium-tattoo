@@ -1,6 +1,7 @@
 package web
 
 import (
+	"log/slog"
 	"net/http"
 
 	"github.com/a-h/templ"
@@ -19,6 +20,7 @@ func Render(w http.ResponseWriter, r *http.Request, statusCode int, t templ.Comp
 }
 
 func RenderError(w http.ResponseWriter, r *http.Request, err error, t func(e ServerError) templ.Component) error {
+	slog.Error("render error", "error", err.Error())
 	if e, ok := err.(ServerError); ok {
 		if e.Errors != nil {
 			return Render(w, r, e.StatusCode, t(e))
@@ -34,4 +36,8 @@ func RenderError(w http.ResponseWriter, r *http.Request, err error, t func(e Ser
 	w.Header().Set("Content-Type", "text/plain")
 	w.Write([]byte("Houve um erro inesperado"))
 	return nil
+}
+
+func Redirect(w http.ResponseWriter, to string) {
+	w.Header().Add("HX-Location", to)
 }

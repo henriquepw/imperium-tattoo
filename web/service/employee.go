@@ -25,7 +25,7 @@ func (s *EmployeeSvc) CreateEmployee(ctx context.Context, payload types.Employee
 		return nil, err
 	}
 
-	if s.repo.CheckEmail(ctx, payload.Email) {
+	if s.repo.HasEmail(ctx, payload.Email) {
 		return nil, web.InvalidRequestDataError(map[string]string{"email": "Email já cadastrado"})
 	}
 

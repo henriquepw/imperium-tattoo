@@ -84,3 +84,4 @@ watch/sync_assets:
 .PHONY: watch
 watch: 
 	make -j4 watch/templ watch/server watch/tailwind watch/sync_assets
+

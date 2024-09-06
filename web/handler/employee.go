@@ -46,5 +46,5 @@ func (h EmployeeHandler) EmployeeCreateAction(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	http.Redirect(w, r, "/employees", http.StatusSeeOther)
+	web.Redirect(w, "/employees")
 }

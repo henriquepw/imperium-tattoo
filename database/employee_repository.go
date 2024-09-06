@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"database/sql"
+	"time"
 
 	"github.com/henriquepw/imperium-tattoo/web"
 	"github.com/henriquepw/imperium-tattoo/web/types"
@@ -11,7 +12,7 @@ import (
 type EmployeeRepo interface {
 	Insert(ctx context.Context, payload types.EmployeeCreateDTO) (*string, error)
 	List(ctx context.Context) ([]types.Employee, error)
-	CheckEmail(ctx context.Context, email string) bool
+	HasEmail(ctx context.Context, email string) bool
 }
 
 type repo struct {
@@ -34,13 +35,16 @@ func (r repo) Insert(ctx context.Context, payload types.EmployeeCreateDTO) (*str
 	}
 	defer tx.Rollback()
 
+	now := time.Now().UnixMilli()
 	_, err = tx.QueryContext(
 		ctx,
-		"INSERT INTO employee (id, name, email, roles) VALUES ($1, $2, $3, $4)",
+		"INSERT INTO employee (id, name, email, roles, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
 		id,
 		payload.Name,
 		payload.Email,
 		payload.Roles,
+		now,
+		now,
 	)
 	if err != nil {
 		return nil, err
@@ -48,14 +52,13 @@ func (r repo) Insert(ctx context.Context, payload types.EmployeeCreateDTO) (*str
 
 	_, err = tx.QueryContext(
 		ctx,
-		"INSERT INTO credential (id, secret) VALUES ($1, $2)",
+		"INSERT INTO credential (id, secret) VALUES (?, ?)",
 		payload.Email,
 		payload.Password,
 	)
 	if err != nil {
 		return nil, err
 	}
-
 	if err = tx.Commit(); err != nil {
 		return nil, err
 	}
@@ -83,7 +86,11 @@ func (r repo) List(ctx context.Context) ([]types.Employee, error) {
 	return items, nil
 }
 
-func (r repo) CheckEmail(ctx context.Context, email string) bool {
-	row := r.db.QueryRowContext(ctx, "SELECT COUNT(1) FROM employee WHERE email = ?", email)
-	return row.Err() == nil
+func (r repo) HasEmail(ctx context.Context, email string) bool {
+	rows, err := r.db.QueryContext(ctx, "SELECT id FROM employee WHERE email = ?", email)
+	if err != nil {
+		return false
+	}
+
+	return rows.Next()
 }
