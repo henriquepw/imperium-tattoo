@@ -1,16 +1,13 @@
 package ui
 
-type FormFieldProps struct {
-	Label string
-	Error string
-}
-
-templ FormField(props FormFieldProps) {
-	<div class="flex flex-col text-gray-12">
-		<label class="font-medium text-sm">{ props.Label }</label>
+templ FormField(label, formErr string, classname ...string) {
+	<div class={ "flex flex-col text-gray-12" , classname }>
+		if label != "" {
+			<label class="font-medium text-md">{ label }</label>
+		}
 		{ children... }
-		if props.Error != "" {
-			<span class="font-medium text-error-10">{ props.Error }</span>
+		if formErr != "" {
+			<span class="font-medium text-error-10">{ formErr }</span>
 		}
 	</div>
 }

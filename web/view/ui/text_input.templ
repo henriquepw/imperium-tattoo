@@ -10,13 +10,13 @@ type TextInputProps struct {
 	Placeholder string
 }
 
-templ TextInput(props TextInputProps) {
-	@FormField(FormFieldProps{Label: props.Label, Error: props.Error}) {
+templ TextInput(p TextInputProps) {
+	@FormField(p.Label, p.Error, p.Class) {
 		<input
-			name={ props.Name }
-			placeholder={ props.Placeholder }
-			value={ props.Value }
-			type={ props.Type }
+			name={ p.Name }
+			placeholder={ p.Placeholder }
+			value={ p.Value }
+			type={ p.Type }
 			class="
         rounded-md px-2 h-9 bg-gray-1 border outline-none
         placeholder:text-gray-10

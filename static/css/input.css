@@ -2,6 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .htmx-request .hx-indicator {
+    display: block;
+  }
+
+  .htmx-request .default-indicator {
+    display: none;
+  }
+
+  .btn-primary {
+    @apply flex items-center justify-center gap-1.5 h-9 px-3 rounded bg-accent-9;
+    @apply font-bold text-gray-12 text-center;
+    @apply transition-all hover:bg-accent-10 active:bg-accent-11 active:scale-95;
+  }
+}
+
 @layer base {
   @font-face {
     font-family: raleway;

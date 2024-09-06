@@ -1,6 +1,6 @@
 module github.com/henriquepw/imperium-tattoo
 
-go 1.22.4
+go 1.23.1
 
 require (
 	github.com/a-h/templ v0.2.747
@@ -8,6 +8,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/matoous/go-nanoid/v2 v2.1.0
 	github.com/tursodatabase/libsql-client-go v0.0.0-20240812094001-348a4e45b535
+	golang.org/x/crypto v0.22.0
 )
 
 require (
@@ -17,7 +18,6 @@ require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
-	golang.org/x/crypto v0.22.0 // indirect
 	golang.org/x/exp v0.0.0-20240325151524-a685a6edb6d8 // indirect
 	golang.org/x/net v0.24.0 // indirect
 	golang.org/x/sys v0.21.0 // indirect

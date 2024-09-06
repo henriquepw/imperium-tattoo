@@ -1,0 +1,20 @@
+package ui
+
+templ SubmitBtn(icon, loadingText string, classname ...string) {
+	<button
+		type="submit"
+		class={
+			"btn-primary [.htmx-request_&]:opacity-50 [.htmx-request_&]:pointer-events-none",
+			classname,
+		}
+	>
+		<div class="items-center gap-1.5 hidden [.htmx-request_&]:flex">
+			@Icon("loader", "h-5 w-5 animate-spin hidden hx-indicator")
+			{ loadingText }
+		</div>
+		<div class="flex gap-1.5 [.htmx-request_&]:hidden">
+			@Icon(icon, "h-5 w-5")
+			{ children... }
+		</div>
+	</button>
+}

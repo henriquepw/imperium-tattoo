@@ -14,8 +14,8 @@ type Employee struct {
 }
 
 type EmployeeCreateDTO struct {
-	Name         string `json:"name" validate:"required"`
-	Email        string `json:"email" validate:"required,email"`
-	Roles        string `json:"roles" validate:"required"`
-	PasswordHash string
+	Name     string `json:"name" validate:"required"`
+	Email    string `json:"email" validate:"required,email"`
+	Roles    string `json:"roles" validate:"required"`
+	Password string `json:"password" validate:"required"`
 }

@@ -1,11 +1,20 @@
 package home
 
-import "github.com/henriquepw/imperium-tattoo/web/view/layout"
+import (
+	"github.com/henriquepw/imperium-tattoo/web/view/layout"
+	"github.com/henriquepw/imperium-tattoo/web/view/ui"
+)
 
 templ HomePage() {
 	@layout.Dashbaord("Painel", "home", false) {
-		<div>
+		@layout.PageHeader(
+			"Painel",
+			[]ui.BreadcrumbItem{
+				{Label: "Painel", Href: "/"},
+			},
+		)
+		<section>
 			MAIN
-		</div>
+		</section>
 	}
 }

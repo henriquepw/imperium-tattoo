@@ -8,20 +8,21 @@ import (
 	"github.com/henriquepw/imperium-tattoo/web/types"
 )
 
-type EmployeeRepository interface {
+type EmployeeRepo interface {
 	Insert(ctx context.Context, payload types.EmployeeCreateDTO) (*string, error)
 	List(ctx context.Context) ([]types.Employee, error)
+	CheckEmail(ctx context.Context, email string) bool
 }
 
-type EmployeeRepo struct {
+type repo struct {
 	db *sql.DB
 }
 
-func NewEmployeeRepo(db *sql.DB) *EmployeeRepo {
-	return &EmployeeRepo{db}
+func NewEmployeeRepo(db *sql.DB) *repo {
+	return &repo{db}
 }
 
-func (r EmployeeRepo) Insert(ctx context.Context, payload types.EmployeeCreateDTO) (*string, error) {
+func (r repo) Insert(ctx context.Context, payload types.EmployeeCreateDTO) (*string, error) {
 	id, err := web.NewID()
 	if err != nil {
 		return nil, err
@@ -49,7 +50,7 @@ func (r EmployeeRepo) Insert(ctx context.Context, payload types.EmployeeCreateDT
 		ctx,
 		"INSERT INTO credential (id, secret) VALUES ($1, $2)",
 		payload.Email,
-		payload.PasswordHash,
+		payload.Password,
 	)
 	if err != nil {
 		return nil, err
@@ -62,7 +63,7 @@ func (r EmployeeRepo) Insert(ctx context.Context, payload types.EmployeeCreateDT
 	return &id, nil
 }
 
-func (r EmployeeRepo) List(ctx context.Context) ([]types.Employee, error) {
+func (r repo) List(ctx context.Context) ([]types.Employee, error) {
 	rows, err := r.db.QueryContext(ctx, "SELECT id, name, email, roles FROM employee")
 	if err != nil {
 		return nil, err
@@ -80,4 +81,9 @@ func (r EmployeeRepo) List(ctx context.Context) ([]types.Employee, error) {
 	}
 
 	return items, nil
+}
+
+func (r repo) CheckEmail(ctx context.Context, email string) bool {
+	row := r.db.QueryRowContext(ctx, "SELECT COUNT(1) FROM employee WHERE email = ?", email)
+	return row.Err() == nil
 }

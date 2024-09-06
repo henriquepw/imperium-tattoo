@@ -8,6 +8,7 @@ import (
 
 	"github.com/henriquepw/imperium-tattoo/database"
 	"github.com/henriquepw/imperium-tattoo/web/handler"
+	"github.com/henriquepw/imperium-tattoo/web/service"
 
 	_ "github.com/joho/godotenv/autoload"
 	_ "github.com/tursodatabase/libsql-client-go/libsql"
@@ -31,7 +32,8 @@ func main() {
 	clientHandler := handler.NewClientHandler()
 	server.HandleFunc("GET /clients", clientHandler.ClientsPage)
 
-	employeeHandler := handler.NewEmployeeHandler(database.NewEmployeeRepo(db))
+	employeeSvc := service.NewEmployeeService(database.NewEmployeeRepo(db))
+	employeeHandler := handler.NewEmployeeHandler(employeeSvc)
 	server.HandleFunc("GET /employees", employeeHandler.EmployeesPage)
 	server.HandleFunc("GET /employees/create", employeeHandler.EmployeeCreatePage)
 	server.HandleFunc("POST /employees/create", employeeHandler.EmployeeCreateAction)

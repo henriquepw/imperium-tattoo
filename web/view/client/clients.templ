@@ -1,11 +1,20 @@
 package client
 
-import "github.com/henriquepw/imperium-tattoo/web/view/layout"
+import (
+	"github.com/henriquepw/imperium-tattoo/web/view/layout"
+	"github.com/henriquepw/imperium-tattoo/web/view/ui"
+)
 
 templ ClientsPage() {
 	@layout.Dashbaord("Painel", "clients", false) {
-		<div>
-			MAIN
-		</div>
+		@layout.PageHeader(
+			"Clientes",
+			[]ui.BreadcrumbItem{
+				{Label: "Clientes", Href: "/clients"},
+			},
+		)
+		<section>
+			CLIENTS
+		</section>
 	}
 }
