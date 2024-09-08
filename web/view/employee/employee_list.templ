@@ -12,8 +12,44 @@ templ badge(role string, classname ...string) {
 	</span>
 }
 
+templ EmployeesLoading(boosted bool) {
+	@layout.Dashbaord("Funcionários", boosted) {
+		<div>
+			@layout.PageHeader("Funcionários", []ui.BreadcrumbItem{
+				{Label: "Funcionários", Href: "/employees"},
+			}) {
+				<a href={ templ.URL("employees/create") } class="btn-primary">
+					@ui.Icon("plus")
+				</a>
+			}
+			<section class="w-full card p-0 overflow-hidden">
+				<table class="table-auto w-full">
+					<thead class="bg-gray-2">
+						<tr class="uppercase">
+							<td class="md:hidden">Funcionário</td>
+							<td class="hidden md:table-cell">Cargo</td>
+							<td class="hidden md:table-cell">Nome</td>
+							<td class="hidden md:table-cell">Email</td>
+							<td></td>
+						</tr>
+					</thead>
+					<tbody>
+						for range 4 {
+							<tr>
+								<td colspan="4" class="p-2">
+									<div class="rounded h-6 bg-gray-400 animate-pulse"></div>
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</section>
+		</div>
+	}
+}
+
 templ EmployeesPage(boosted bool, items []types.Employee) {
-	@layout.Dashbaord("Funcionários", "employees", boosted) {
+	@layout.Dashbaord("Funcionários", boosted) {
 		<div>
 			@layout.PageHeader("Funcionários", []ui.BreadcrumbItem{
 				{Label: "Funcionários", Href: "/employees"},

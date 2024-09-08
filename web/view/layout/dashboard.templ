@@ -1,14 +1,17 @@
 package layout
 
-import "github.com/henriquepw/imperium-tattoo/web/view/ui"
+import (
+	"fmt"
+	"github.com/henriquepw/imperium-tattoo/web/view/ui"
+)
 
-templ Dashbaord(title, route string, boosted bool) {
+templ Dashbaord(title string, boosted bool) {
 	if boosted {
 		{ children... }
 	} else {
 		@Base(title) {
 			<div
-				x-data="{ menu: false }"
+				x-data="{ open: false, path: window.location.pathname }"
 				class="min-h-svh h-full w-full max-w-[90rem] mx-auto grid grid-cols-[auto_1fr] grid-rows-[auto_1fr]"
 				hx-boost="true"
 				hx-target="#main"
@@ -18,41 +21,39 @@ templ Dashbaord(title, route string, boosted bool) {
 				</main>
 				<aside
 					class="flex flex-row fixed bg-agray-1 backdrop-blur-xl inset-0 z-50 transition-opacity duration-300 opacity-0 pointer-events-none"
-					:class="menu ? 'opacity-100 pointer-events-auto':''"
+					:class="open ? 'opacity-100 pointer-events-auto':''"
 				>
 					<nav
 						class="h-full w-full max-w-60 bg-gray-2 p-4 md:p-8 md:pt-10 shadow shadow-agray-2 -translate-x-[100%] transition-transform duration-500"
-						:class="menu ? 'translate-x-0':''"
+						:class="open ? 'translate-x-0':''"
 					>
 						<header class="h-9 mb-4 flex flex-col justify-center">
 							<button
 								class="transition-colors hover:bg-agray-3 active:bg-agray-5 rounded h-8 w-8 flex items-center justify-center -ml-1"
-								@click="menu = false"
+								@click="open = false"
 							>
 								<i data-feather="x"></i>
 							</button>
 						</header>
 						<ul class="flex flex-col list-none gap-6">
-							@item("Home", "home", "/", route == "home")
-							@item("Clientes", "users", "/clients", route == "clients")
-							@item("Funcionários", "users", "/employees", route == "employees")
+							@item("Home", "home", "/dashboard")
+							@item("Clientes", "users", "/clients")
+							@item("Funcionários", "users", "/employees")
 						</ul>
 					</nav>
-					<div class="flex-1 opacity-0" @click="menu = false"></div>
+					<div class="flex-1 opacity-0" @click="open = false"></div>
 				</aside>
 			</div>
 		}
 	}
 }
 
-templ item(label, icon, href string, active bool) {
+templ item(label, icon, href string) {
 	<a
 		href={ templ.URL(href) }
-		@click="menu = false"
-		class={
-			"cursor-pointer flex flex-1 gap-4 flex-row items-center",
-			templ.KV("text-accent-10", active),
-		}
+		@click={ "open=false;path='" + href + "'" }
+		:class={ fmt.Sprintf("path.startsWith('%s')?'text-accent-10':''", href) }
+		class="cursor-pointer flex flex-1 gap-4 flex-row items-center"
 	>
 		<i data-feather={ icon }></i>
 		<span class="text-lg">{ label }</span>
@@ -65,7 +66,7 @@ templ PageHeader(title string, breadcrumb []ui.BreadcrumbItem) {
 		<div class="flex gap-4 justify-between flex-wrap items-center">
 			<button
 				class="transition-colors hover:bg-agray-3 active:bg-agray-5 bg-gray-1 rounded h-8 w-8 flex items-center justify-center -ml-1"
-				@click="menu = !menu"
+				@click="open = !open"
 			>
 				<i data-feather="menu"></i>
 			</button>

@@ -5,8 +5,8 @@ import (
 	"github.com/henriquepw/imperium-tattoo/web/view/ui"
 )
 
-templ ClientsPage() {
-	@layout.Dashbaord("Painel", "clients", false) {
+templ ClientsPage(boosted bool) {
+	@layout.Dashbaord("Painel", boosted) {
 		@layout.PageHeader(
 			"Clientes",
 			[]ui.BreadcrumbItem{

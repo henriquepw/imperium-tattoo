@@ -5,12 +5,12 @@ import (
 	"github.com/henriquepw/imperium-tattoo/web/view/ui"
 )
 
-templ HomePage() {
-	@layout.Dashbaord("Painel", "home", false) {
+templ HomePage(boosted bool) {
+	@layout.Dashbaord("Painel", boosted) {
 		@layout.PageHeader(
 			"Painel",
 			[]ui.BreadcrumbItem{
-				{Label: "Painel", Href: "/"},
+				{Label: "Painel", Href: "/dashboard"},
 			},
 		)
 		<section>

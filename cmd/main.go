@@ -27,7 +27,7 @@ func main() {
 	server := http.NewServeMux()
 
 	homeHandler := handler.NewHomeHandler()
-	server.HandleFunc("/", homeHandler.HomePage)
+	server.HandleFunc("/dashboard", homeHandler.HomePage)
 
 	clientHandler := handler.NewClientHandler()
 	server.HandleFunc("GET /clients", clientHandler.ClientsPage)

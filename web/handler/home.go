@@ -14,5 +14,5 @@ func NewHomeHandler() HomeHandler {
 }
 
 func (h HomeHandler) HomePage(w http.ResponseWriter, r *http.Request) {
-	web.Render(w, r, http.StatusOK, home.HomePage())
+	web.RenderPage(w, r, home.HomePage)
 }

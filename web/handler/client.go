@@ -14,5 +14,5 @@ func NewClientHandler() ClientHandler {
 }
 
 func (h ClientHandler) ClientsPage(w http.ResponseWriter, r *http.Request) {
-	web.Render(w, r, http.StatusOK, client.ClientsPage())
+	web.RenderPage(w, r, client.ClientsPage)
 }
