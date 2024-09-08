@@ -29,3 +29,6 @@ static/css/output.css
 
 # mac stuff
 .DS_Store
+
+# fly config
+fly.toml
