@@ -1,0 +1,71 @@
+package employee
+
+import (
+	"github.com/henriquepw/imperium-tattoo/web/types"
+	"github.com/henriquepw/imperium-tattoo/web/view/layout"
+	"github.com/henriquepw/imperium-tattoo/web/view/ui"
+)
+
+templ badge(role string, classname ...string) {
+	<span class={ "text-sm text-accent-12 bg-accent-3 border border-accent-6 px-1 py-0.5 rounded" , classname }>
+		{ role }
+	</span>
+}
+
+templ EmployeesPage(boosted bool, items []types.Employee) {
+	@layout.Dashbaord("Funcionários", "employees", boosted) {
+		<div>
+			@layout.PageHeader("Funcionários", []ui.BreadcrumbItem{
+				{Label: "Funcionários", Href: "/employees"},
+			}) {
+				<a href={ templ.URL("employees/create") } class="btn-primary">
+					@ui.Icon("plus")
+				</a>
+			}
+			<section class="w-full card p-0 overflow-hidden">
+				<table class="table-auto w-full">
+					<thead class="bg-gray-2">
+						<tr class="uppercase">
+							<td class="md:hidden">Funcionário</td>
+							<td class="hidden md:table-cell">Cargo</td>
+							<td class="hidden md:table-cell">Nome</td>
+							<td class="hidden md:table-cell">Email</td>
+							<td></td>
+						</tr>
+					</thead>
+					<tbody>
+						for _, i := range items {
+							<tr>
+								<td class="max-w-10 hidden md:table-cell">
+									@badge(i.Role)
+								</td>
+								<td>
+									<div class="flex flex-col">
+										<div class="space-x-2">
+											@badge(i.Role, "md:hidden")
+											<span>{ i.Name }</span>
+										</div>
+										<span class="text-gray-11 md:hidden">{ i.Email }</span>
+									</div>
+								</td>
+								<td class="hidden md:block">{ i.Email }</td>
+								<td class="max-w-4">
+									@ui.Icon("edit", "h-4 text-gray-11")
+								</td>
+							</tr>
+						}
+						if len(items) == 0 {
+							<tr>
+								<td colspan="4" class="bg-warning-2">
+									<div class="text-center text-warning-12">
+										Nenhum Funcionário cadastrado
+									</div>
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</section>
+		</div>
+	}
+}

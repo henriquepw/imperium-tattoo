@@ -19,7 +19,16 @@ func NewEmployeeHandler(svc service.EmployeeService) *EmployeeHandler {
 }
 
 func (h EmployeeHandler) EmployeesPage(w http.ResponseWriter, r *http.Request) {
-	web.RenderPage(w, r, employee.EmployeesPage)
+	employees, err := h.svc.ListEmployees(r.Context())
+	if err != nil {
+		web.RenderError(w, r, err, func(e web.ServerError) templ.Component {
+			return employee.EmployeesPage(true, []types.Employee{})
+		})
+	}
+
+	web.RenderPage(w, r, func(boosted bool) templ.Component {
+		return employee.EmployeesPage(boosted, employees)
+	})
 }
 
 func (h EmployeeHandler) EmployeeCreatePage(w http.ResponseWriter, r *http.Request) {
@@ -31,8 +40,8 @@ func (h EmployeeHandler) EmployeeCreateAction(w http.ResponseWriter, r *http.Req
 	payload := types.EmployeeCreateDTO{
 		Name:     r.Form.Get("name"),
 		Email:    r.Form.Get("email"),
-		Roles:    r.Form.Get("roles"),
 		Password: r.Form.Get("email"),
+		Role:     "ADMIN",
 	}
 
 	_, err := h.svc.CreateEmployee(r.Context(), payload)

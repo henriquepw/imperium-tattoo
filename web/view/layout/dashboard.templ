@@ -60,7 +60,7 @@ templ item(label, icon, href string, active bool) {
 }
 
 templ PageHeader(title string, breadcrumb []ui.BreadcrumbItem) {
-	<header class="h-9 mb-4 flex flex-col justify-center">
+	<header class="h-10 mb-4 flex flex-col justify-center md:mb-8">
 		@ui.Breadcrumb(breadcrumb)
 		<div class="flex gap-4 justify-between flex-wrap items-center">
 			<button

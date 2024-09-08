@@ -38,11 +38,11 @@ func (r repo) Insert(ctx context.Context, payload types.EmployeeCreateDTO) (*str
 	now := time.Now().UnixMilli()
 	_, err = tx.QueryContext(
 		ctx,
-		"INSERT INTO employee (id, name, email, roles, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
+		"INSERT INTO employee (id, name, email, role, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
 		id,
 		payload.Name,
 		payload.Email,
-		payload.Roles,
+		payload.Role,
 		now,
 		now,
 	)
@@ -67,7 +67,7 @@ func (r repo) Insert(ctx context.Context, payload types.EmployeeCreateDTO) (*str
 }
 
 func (r repo) List(ctx context.Context) ([]types.Employee, error) {
-	rows, err := r.db.QueryContext(ctx, "SELECT id, name, email, roles FROM employee")
+	rows, err := r.db.QueryContext(ctx, "SELECT id, name, email, role FROM employee")
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +76,7 @@ func (r repo) List(ctx context.Context) ([]types.Employee, error) {
 	items := []types.Employee{}
 	for rows.Next() {
 		var r types.Employee
-		if err = rows.Scan(&r.ID, &r.Name, &r.Email, &r.Roles); err != nil {
+		if err = rows.Scan(&r.ID, &r.Name, &r.Email, &r.Role); err != nil {
 			return nil, err
 		}
 

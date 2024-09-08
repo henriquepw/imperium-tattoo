@@ -3,12 +3,8 @@
 @tailwind utilities;
 
 @layer components {
-  .htmx-request .hx-indicator {
-    display: block;
-  }
-
-  .htmx-request .default-indicator {
-    display: none;
+  .card {
+    @apply bg-gray-2 backdrop-blur border border-gray-7 rounded-lg p-4
   }
 
   .btn-primary {
@@ -19,6 +15,18 @@
 }
 
 @layer base {
+  td {
+    @apply py-3 px-4;
+  }
+
+  thead td {
+    @apply bg-gray-3 border-b border-gray-6 font-bold text-sm;
+  }
+
+  tr+tr td {
+    @apply border-t border-t-gray-6;
+  }
+
   @font-face {
     font-family: raleway;
     font-weight: 400;

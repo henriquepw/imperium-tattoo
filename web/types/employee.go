@@ -10,12 +10,12 @@ type Employee struct {
 	ID        string    `json:"id"`
 	Name      string    `json:"name"`
 	Email     string    `json:"email"`
-	Roles     []string  `json:"roles"`
+	Role      string    `json:"role"`
 }
 
 type EmployeeCreateDTO struct {
 	Name     string `json:"name" validate:"required"`
 	Email    string `json:"email" validate:"required,email"`
-	Roles    string `json:"roles" validate:"required"`
+	Role     string `json:"role" validate:"required"`
 	Password string `json:"password" validate:"required"`
 }

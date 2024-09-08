@@ -1,58 +1,56 @@
 package employee
 
 import (
-"github.com/henriquepw/imperium-tattoo/web/types"
-"github.com/henriquepw/imperium-tattoo/web/view/layout"
-"github.com/henriquepw/imperium-tattoo/web/view/ui"
+	"github.com/henriquepw/imperium-tattoo/web/types"
+	"github.com/henriquepw/imperium-tattoo/web/view/layout"
+	"github.com/henriquepw/imperium-tattoo/web/view/ui"
 )
 
 templ EmployeeCreatePage(boosted bool) {
-@layout.Dashbaord("Novo Profissional", "employees", boosted) {
-<section>
-  @layout.PageHeader(
-  "Novo Profissional",
-  []ui.BreadcrumbItem{
-  {Label: "Profissinais", Href: "/employees"},
-  {Label: "Novo", Href: "/employees/create"},
-  },
-  )
-  @ui.Card() {
-  @EmployeeCreateForm(EmployeeCreateFormProps{})
-  }
-</section>
-}
+	@layout.Dashbaord("Novo Profissional", "employees", boosted) {
+		<section>
+			@layout.PageHeader(
+				"Novo Profissional",
+				[]ui.BreadcrumbItem{
+					{Label: "Funcionários", Href: "/employees"},
+					{Label: "Novo", Href: "/employees/create"},
+				},
+			)
+			@ui.Card() {
+				@EmployeeCreateForm(EmployeeCreateFormProps{})
+			}
+		</section>
+	}
 }
 
 type EmployeeCreateFormProps struct {
-Values types.EmployeeCreateDTO
-Errors map[string]string
+	Values types.EmployeeCreateDTO
+	Errors map[string]string
 }
 
 templ EmployeeCreateForm(props EmployeeCreateFormProps) {
-<form hx-post="/employees/create" hx-target="this" hx-swap="outerHTML" class="flex flex-col gap-4 group">
-  @ui.TextInput(ui.TextInputProps{
-  Name: "name",
-  Label: "Nome",
-  Placeholder: "Nome do Profissinal",
-  Value: props.Values.Name,
-  Error: props.Errors["name"],
-  })
-  @ui.TextInput(ui.TextInputProps{
-  Name: "email",
-  Label: "Email",
-  Placeholder: "exemplo@gmail.com",
-  Value: props.Values.Email,
-  Error: props.Errors["email"],
-  })
-  @ui.TextInput(ui.TextInputProps{
-  Name: "roles",
-  Label: "Cargo",
-  Placeholder: "Admin",
-  Value: props.Values.Roles,
-  Error: props.Errors["roles"],
-  })
-  @ui.SubmitBtn("save", "Criando...", "ml-auto") {
-  Criar
-  }
-</form>
+	<form
+		hx-post="/employees/create"
+		hx-target="this"
+		hx-swap="outerHTML"
+		class="flex flex-col gap-4 group [&.htmx-request]:pointer-events-none"
+	>
+		@ui.TextInput(ui.TextInputProps{
+			Name:        "name",
+			Label:       "Nome",
+			Placeholder: "Nome do Funcionário",
+			Value:       props.Values.Name,
+			Error:       props.Errors["name"],
+		})
+		@ui.TextInput(ui.TextInputProps{
+			Name:        "email",
+			Label:       "Email",
+			Placeholder: "exemplo@gmail.com",
+			Value:       props.Values.Email,
+			Error:       props.Errors["email"],
+		})
+		@ui.SubmitBtn("save", "Criando...", "ml-auto") {
+			Criar
+		}
+	</form>
 }
