@@ -13,5 +13,5 @@ FROM alpine:latest
 WORKDIR /app
 
 COPY --from=builder app/static/ ./static/
-COPY --from=builder app/main app/.env .
+COPY --from=builder app/main .
 CMD ["./main"]
