@@ -13,8 +13,10 @@ templ ClientsPage(boosted bool) {
 				{Label: "Clientes", Href: "/clients"},
 			},
 		)
-		<section>
-			CLIENTS
-		</section>
+		@layout.WithPageLoad() {
+			<section>
+				CLIENTS
+			</section>
+		}
 	}
 }

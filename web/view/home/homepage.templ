@@ -13,8 +13,10 @@ templ HomePage(boosted bool) {
 				{Label: "Painel", Href: "/dashboard"},
 			},
 		)
-		<section>
-			MAIN
-		</section>
+		@layout.WithPageLoad() {
+			<section>
+				MAIN
+			</section>
+		}
 	}
 }

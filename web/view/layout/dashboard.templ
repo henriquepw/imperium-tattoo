@@ -5,16 +5,28 @@ import (
 	"github.com/henriquepw/imperium-tattoo/web/view/ui"
 )
 
+templ WithPageLoad() {
+	<div class="space-y-4 hidden [#main.htmx-request_&]:block">
+		for range 4 {
+			<div class="h-12 w-full rounded bg-gray-3 animate-pulse"></div>
+		}
+	</div>
+	<div class="[#main.htmx-request_&]:hidden">
+		{ children... }
+	</div>
+}
+
 templ Dashbaord(title string, boosted bool) {
 	if boosted {
 		{ children... }
 	} else {
 		@Base(title) {
 			<div
-				x-data="{ open: false, path: window.location.pathname }"
+				x-data="{ open: false, path: window.location.pathname, navigating: false }"
 				class="min-h-svh h-full w-full max-w-[90rem] mx-auto grid grid-cols-[auto_1fr] grid-rows-[auto_1fr]"
 				hx-boost="true"
 				hx-target="#main"
+				hx-indicator="#main"
 			>
 				<main id="main" class="col-end-3 row-span-2 w-full p-4 md:p-8">
 					{ children... }

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/a-h/templ"
 	"github.com/henriquepw/imperium-tattoo/web"
@@ -32,6 +33,7 @@ func (h EmployeeHandler) EmployeesPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h EmployeeHandler) EmployeeCreatePage(w http.ResponseWriter, r *http.Request) {
+	time.Sleep(5 * time.Second)
 	web.RenderPage(w, r, employee.EmployeeCreatePage)
 }
 

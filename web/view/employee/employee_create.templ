@@ -8,18 +8,18 @@ import (
 
 templ EmployeeCreatePage(boosted bool) {
 	@layout.Dashbaord("Novo Profissional", boosted) {
-		<section>
-			@layout.PageHeader(
-				"Novo Profissional",
-				[]ui.BreadcrumbItem{
-					{Label: "Funcionários", Href: "/employees"},
-					{Label: "Novo", Href: "/employees/create"},
-				},
-			)
-			@ui.Card() {
+		@layout.PageHeader(
+			"Novo Profissional",
+			[]ui.BreadcrumbItem{
+				{Label: "Funcionários", Href: "/employees"},
+				{Label: "Novo", Href: "/employees/create"},
+			},
+		)
+		@layout.WithPageLoad() {
+			<section class="card">
 				@EmployeeCreateForm(EmployeeCreateFormProps{})
-			}
-		</section>
+			</section>
+		}
 	}
 }
 
