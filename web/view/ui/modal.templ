@@ -1,0 +1,30 @@
+package ui
+
+templ Modal(show, close, title string) {
+	<div
+		x-cloak
+		x-show={ show }
+		x-transition.opacity.duration.200ms
+		class="z-50 fixed inset-0 flex items-center justify-center"
+	>
+		<div x-show={ show } x-transition.opacity.duration.300ms class="z-40 absolute inset-0 bg-gray-12/20 backdrop-blur-sm"></div>
+		<div
+			x-show={ show }
+			x-transition:enter-start="opacity-0 translate-y-full"
+			x-transition:enter-end="opacity-100 translate-y-0"
+			x-transition:leave-start="opacity-100 translate-y-0"
+			x-transition:leave-end="opacity-0 translate-y-full"
+			class="z-50 bg-gray-2 p-4 w-full mt-auto rounded-t-xl transition ease-out duration-500 shadow-gray-10 shadow"
+		>
+			<div class="flex items-center justify-between border-b pb-2 mb-4">
+				<h2 class="text-xl font-bold">
+					{ title }
+				</h2>
+				<button @click={ close }>
+					@Icon("x", "h-4 text-gray-11")
+				</button>
+			</div>
+			{ children... }
+		</div>
+	</div>
+}

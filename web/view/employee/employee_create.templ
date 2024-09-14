@@ -33,6 +33,7 @@ templ EmployeeCreateForm(props EmployeeCreateFormProps) {
 		hx-post="/employees/create"
 		hx-target="this"
 		hx-swap="outerHTML"
+		hx-indicator="this"
 		class="flex flex-col gap-4 group [&.htmx-request]:pointer-events-none"
 	>
 		@ui.TextInput(ui.TextInputProps{
