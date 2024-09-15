@@ -31,10 +31,6 @@ func (h EmployeeHandler) EmployeesPage(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (h EmployeeHandler) EmployeeCreatePage(w http.ResponseWriter, r *http.Request) {
-	web.RenderPage(w, r, employee.EmployeeCreatePage)
-}
-
 func (h EmployeeHandler) EmployeeCreateAction(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	payload := types.EmployeeCreateDTO{
@@ -44,7 +40,7 @@ func (h EmployeeHandler) EmployeeCreateAction(w http.ResponseWriter, r *http.Req
 		Role:     "ADMIN",
 	}
 
-	_, err := h.svc.CreateEmployee(r.Context(), payload)
+	e, err := h.svc.CreateEmployee(r.Context(), payload)
 	if err != nil {
 		web.RenderError(w, r, err, func(e web.ServerError) templ.Component {
 			return employee.EmployeeCreateForm(employee.EmployeeCreateFormProps{
@@ -55,19 +51,8 @@ func (h EmployeeHandler) EmployeeCreateAction(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	web.Redirect(w, "/employees")
-}
-
-func (h EmployeeHandler) EmployeeEditPage(w http.ResponseWriter, r *http.Request) {
-	data, err := h.svc.GetEmployee(r.Context(), r.PathValue("id"))
-	if err != nil {
-		web.RenderError(w, r, err, nil)
-		return
-	}
-
-	web.RenderPage(w, r, func(b bool) templ.Component {
-		return employee.EmployeeEditPage(b, *data)
-	})
+	web.Render(w, r, http.StatusCreated, employee.EmployeeCreateForm(employee.EmployeeCreateFormProps{}))
+	web.Render(w, r, http.StatusCreated, employee.OobEmployee(*e))
 }
 
 func (h EmployeeHandler) EmployeeEditAction(w http.ResponseWriter, r *http.Request) {
@@ -81,12 +66,18 @@ func (h EmployeeHandler) EmployeeEditAction(w http.ResponseWriter, r *http.Reque
 	err := h.svc.UpdateEmployee(r.Context(), id, payload)
 	if err != nil {
 		web.RenderError(w, r, err, func(e web.ServerError) templ.Component {
-			return employee.EmployeeEditForm(id, payload, e.Errors)
+			return employee.EmployeeEditForm(e.Errors)
 		})
 		return
 	}
 
-	web.Redirect(w, "/employees")
+	web.Render(w, r, http.StatusOK, employee.EmployeeEditForm(nil))
+	web.Render(w, r, http.StatusCreated, employee.OobEmployeeUpdated(types.Employee{
+		ID:    id,
+		Name:  payload.Name,
+		Role:  payload.Role,
+		Email: r.Form.Get("email"),
+	}))
 }
 
 func (h EmployeeHandler) EmployeeDeleteAction(w http.ResponseWriter, r *http.Request) {

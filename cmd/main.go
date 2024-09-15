@@ -35,9 +35,7 @@ func main() {
 	employeeSvc := service.NewEmployeeService(database.NewEmployeeRepo(db))
 	employeeHandler := handler.NewEmployeeHandler(employeeSvc)
 	server.HandleFunc("GET /employees", employeeHandler.EmployeesPage)
-	server.HandleFunc("GET /employees/create", employeeHandler.EmployeeCreatePage)
 	server.HandleFunc("POST /employees/create", employeeHandler.EmployeeCreateAction)
-	server.HandleFunc("GET /employees/{id}", employeeHandler.EmployeeEditPage)
 	server.HandleFunc("PUT /employees/{id}", employeeHandler.EmployeeEditAction)
 	server.HandleFunc("DELETE /employees/{id}", employeeHandler.EmployeeDeleteAction)
 

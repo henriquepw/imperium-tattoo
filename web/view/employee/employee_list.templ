@@ -1,6 +1,7 @@
 package employee
 
 import (
+	"fmt"
 	"github.com/henriquepw/imperium-tattoo/web/types"
 	"github.com/henriquepw/imperium-tattoo/web/view/layout"
 	"github.com/henriquepw/imperium-tattoo/web/view/ui"
@@ -12,15 +13,55 @@ templ badge(role string, classname ...string) {
 	</span>
 }
 
+func getEmployeeStr(e types.Employee) string {
+	return fmt.Sprintf(
+		"employee={id:\"%s\",name:\"%s\",role:\"%s\",email:\"%s\"}",
+		e.ID, e.Name, e.Role, e.Email,
+	)
+}
+
+templ EmployeeRow(i types.Employee) {
+	<tr id={ "employee-" + i.ID } class="group [&.htmx-request]:hidden">
+		<td class="max-w-10 hidden md:table-cell">
+			@badge(i.Role)
+		</td>
+		<td>
+			<div class="flex flex-col">
+				<div class="space-x-2">
+					@badge(i.Role, "md:hidden")
+					<span>{ i.Name }</span>
+				</div>
+				<span class="text-gray-11 md:hidden">{ i.Email }</span>
+			</div>
+		</td>
+		<td class="hidden md:block">{ i.Email }</td>
+		<td>
+			<div class="flex gap-4 justify-end">
+				<button type="button" @click={ getEmployeeStr(i) }>
+					@ui.Icon("edit", "h-4 text-gray-11")
+				</button>
+				<button
+					hx-delete={ "employees/" + i.ID }
+					hx-swap="outerHTML"
+					hx-target={ "#employee-" + i.ID }
+					hx-indicator={ "#employee-" + i.ID }
+				>
+					@ui.Indicator("trash", "h-4 text-error-8")
+				</button>
+			</div>
+		</td>
+	</tr>
+}
+
 templ EmployeesPage(boosted bool, items []types.Employee) {
 	@layout.Dashbaord("Funcionários", boosted) {
-		<div>
+		<div x-data="{createOpen: false, employee: null}">
 			@layout.PageHeader("Funcionários", []ui.BreadcrumbItem{
 				{Label: "Funcionários", Href: "/employees"},
 			}) {
-				<a href={ templ.URL("employees/create") } class="btn-primary">
+				<button class="btn-primary" type="button" @click="createOpen=true">
 					@ui.Icon("plus")
-				</a>
+				</button>
 			}
 			@layout.WithPageLoad() {
 				<section class="w-full card p-0 overflow-hidden">
@@ -34,38 +75,9 @@ templ EmployeesPage(boosted bool, items []types.Employee) {
 								<td></td>
 							</tr>
 						</thead>
-						<tbody>
+						<tbody id="employees">
 							for _, i := range items {
-								<tr id={ "employee-" + i.ID } class="group [&.htmx-request]:pointer-events-none">
-									<td class="max-w-10 hidden md:table-cell">
-										@badge(i.Role)
-									</td>
-									<td>
-										<div class="flex flex-col">
-											<div class="space-x-2">
-												@badge(i.Role, "md:hidden")
-												<span>{ i.Name }</span>
-											</div>
-											<span class="text-gray-11 md:hidden">{ i.Email }</span>
-										</div>
-									</td>
-									<td class="hidden md:block">{ i.Email }</td>
-									<td>
-										<div class="flex gap-4 justify-end">
-											<a href={ templ.URL("employees/" + i.ID) }>
-												@ui.Icon("edit", "h-4 text-gray-11")
-											</a>
-											<button
-												hx-delete={ "employees/" + i.ID }
-												hx-swap="outerHTML"
-												hx-target={ "#employee-" + i.ID }
-												hx-indicator={ "#employee-" + i.ID }
-											>
-												@ui.Indicator("trash", "h-4 text-error-8")
-											</button>
-										</div>
-									</td>
-								</tr>
+								@EmployeeRow(i)
 							}
 							if len(items) == 0 {
 								<tr>
@@ -79,6 +91,12 @@ templ EmployeesPage(boosted bool, items []types.Employee) {
 						</tbody>
 					</table>
 				</section>
+			}
+			@ui.Modal("createOpen", "createOpen=false", "Novo Funcionário") {
+				@EmployeeCreateForm(EmployeeCreateFormProps{})
+			}
+			@ui.Modal("!!employee", "employee=null", "Editar Funcionário") {
+				@EmployeeEditForm(nil)
 			}
 		</div>
 	}

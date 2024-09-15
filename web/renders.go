@@ -13,9 +13,8 @@ func RenderPage(w http.ResponseWriter, r *http.Request, comp func(boosted bool) 
 }
 
 func Render(w http.ResponseWriter, r *http.Request, statusCode int, t templ.Component) error {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(statusCode)
-	w.Header().Set("Content-Type", "text/html")
-
 	return t.Render(r.Context(), w)
 }
 

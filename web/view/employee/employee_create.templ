@@ -2,26 +2,8 @@ package employee
 
 import (
 	"github.com/henriquepw/imperium-tattoo/web/types"
-	"github.com/henriquepw/imperium-tattoo/web/view/layout"
 	"github.com/henriquepw/imperium-tattoo/web/view/ui"
 )
-
-templ EmployeeCreatePage(boosted bool) {
-	@layout.Dashbaord("Novo Profissional", boosted) {
-		@layout.PageHeader(
-			"Novo Profissional",
-			[]ui.BreadcrumbItem{
-				{Label: "Funcionários", Href: "/employees"},
-				{Label: "Novo", Href: "/employees/create"},
-			},
-		)
-		@layout.WithPageLoad() {
-			<section class="card">
-				@EmployeeCreateForm(EmployeeCreateFormProps{})
-			</section>
-		}
-	}
-}
 
 type EmployeeCreateFormProps struct {
 	Values types.EmployeeCreateDTO
@@ -35,6 +17,11 @@ templ EmployeeCreateForm(props EmployeeCreateFormProps) {
 		hx-swap="outerHTML"
 		hx-indicator="this"
 		class="flex flex-col gap-4 group [&.htmx-request]:pointer-events-none"
+		@htmx:before-swap="(e) => {
+      if (e.detail.xhr.status === 201) {
+        createOpen = false;
+      }
+    }"
 	>
 		@ui.TextInput(ui.TextInputProps{
 			Name:        "name",
@@ -54,4 +41,12 @@ templ EmployeeCreateForm(props EmployeeCreateFormProps) {
 			Criar
 		}
 	</form>
+}
+
+templ OobEmployee(i types.Employee) {
+	<template>
+		<tbody hx-swap-oob="beforeend:#employees">
+			@EmployeeRow(i)
+		</tbody>
+	</template>
 }

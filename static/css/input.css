@@ -12,6 +12,13 @@
     @apply font-bold text-gray-12 text-center;
     @apply transition-all hover:bg-accent-10 active:bg-accent-11 active:scale-95;
   }
+
+  .input {
+    @apply rounded-md px-2 h-9 bg-gray-1 border outline-none;
+    @apply placeholder:text-gray-10;
+    @apply hover:border-gray-10 active:border-accent-10;
+    @apply focus:border-accent-10 focus:ring-2 focus:ring-accent-10;
+  }
 }
 
 @layer base {

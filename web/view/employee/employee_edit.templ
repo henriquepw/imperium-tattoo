@@ -2,44 +2,67 @@ package employee
 
 import (
 	"github.com/henriquepw/imperium-tattoo/web/types"
-	"github.com/henriquepw/imperium-tattoo/web/view/layout"
 	"github.com/henriquepw/imperium-tattoo/web/view/ui"
 )
 
-templ EmployeeEditPage(boosted bool, e types.Employee) {
-	@layout.Dashbaord(e.Name, boosted) {
-		@layout.PageHeader(
-			e.Name,
-			[]ui.BreadcrumbItem{
-				{Label: "Funcionários", Href: "/employees"},
-				{Label: "Editar", Href: "/employees/" + e.ID},
-			},
-		)
-		@layout.WithPageLoad() {
-			<section class="card">
-				@EmployeeEditForm(e.ID, types.EmployeeUpdateDTO{Name: e.Name, Role: e.Role}, nil)
-			</section>
-		}
-	}
-}
-
-templ EmployeeEditForm(id string, values types.EmployeeUpdateDTO, errors map[string]string) {
+templ EmployeeEditForm(errors map[string]string) {
 	<form
-		hx-put={ "/employees/" + id }
-		hx-target="this"
+		:hx-put="`employees/${employee?.id}`"
+		x-init="$watch('employee', () => htmx.process($el))"
 		hx-swap="outerHTML"
+		hx-target="this"
 		hx-indicator="this"
 		class="flex flex-col gap-4 group [&.htmx-request]:pointer-events-none"
+		@htmx:before-swap="(e) => {
+      if (e.detail.xhr.status === 200) {
+        employee = null;
+      }
+    }"
 	>
-		@ui.TextInput(ui.TextInputProps{
-			Name:        "name",
-			Label:       "Nome",
-			Placeholder: "Nome do Funcionário",
-			Value:       values.Name,
-			Error:       errors["name"],
-		})
+		@ui.FormField("Nome", errors["name"]) {
+			<input class="input" name="name" type="text" placeholder="nome do funcionário" :value="employee?.name"/>
+		}
+		@ui.FormField("Cargo", errors["role"]) {
+			<input class="input" name="role" type="text" placeholder="nome do funcionário" :value="employee?.role"/>
+		}
+		<input class="hidden" name="email" type="email" :value="employee?.email"/>
 		@ui.SubmitBtn("save", "Salvando...", "ml-auto") {
 			Salvar
 		}
 	</form>
+}
+
+templ OobEmployeeUpdated(i types.Employee) {
+	<template>
+		<tr id={ "employee-" + i.ID } hx-swap-oob="innerHTML" class="group [&.htmx-request]:hidden">
+			<td class="max-w-10 hidden md:table-cell">
+				@badge(i.Role)
+			</td>
+			<td>
+				<div class="flex flex-col">
+					<div class="space-x-2">
+						@badge(i.Role, "md:hidden")
+						<span>{ i.Name }</span>
+					</div>
+					<span class="text-gray-11 md:hidden">{ i.Email }</span>
+				</div>
+			</td>
+			<td class="hidden md:block">{ i.Email }</td>
+			<td>
+				<div class="flex gap-4 justify-end">
+					<button type="button" @click={ getEmployeeStr(i) }>
+						@ui.Icon("edit", "h-4 text-gray-11")
+					</button>
+					<button
+						hx-swap="outerHTML"
+						hx-delete={ "employees/" + i.ID }
+						hx-target={ "#employee-" + i.ID }
+						hx-indicator={ "#employee-" + i.ID }
+					>
+						@ui.Indicator("trash", "h-4 text-error-8")
+					</button>
+				</div>
+			</td>
+		</tr>
+	</template>
 }

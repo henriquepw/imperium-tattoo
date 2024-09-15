@@ -2,6 +2,8 @@ package types
 
 import (
 	"time"
+
+	"github.com/henriquepw/imperium-tattoo/web"
 )
 
 type Employee struct {
@@ -11,6 +13,23 @@ type Employee struct {
 	Name      string    `json:"name"`
 	Email     string    `json:"email"`
 	Role      string    `json:"role"`
+}
+
+func NewEmployee(payload EmployeeCreateDTO) (*Employee, error) {
+	id, err := web.NewID()
+	if err != nil {
+		return nil, err
+	}
+
+	now := time.Now()
+	return &Employee{
+		CreatedAt: now,
+		UpdatedAt: now,
+		ID:        id,
+		Name:      payload.Name,
+		Email:     payload.Email,
+		Role:      payload.Role,
+	}, nil
 }
 
 type EmployeeCreateDTO struct {

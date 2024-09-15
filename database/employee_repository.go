@@ -109,11 +109,18 @@ func (r employeeRepo) Update(ctx context.Context, id string, payload types.Emplo
 }
 
 func (r employeeRepo) Delete(ctx context.Context, id string) error {
-	_, err := r.db.ExecContext(
-		ctx,
-		"DELETE FROM employee WHERE id = ?; DELETE FROM credential WHERE id = ?",
-		id, id,
-	)
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	_, err = tx.ExecContext(ctx, "DELETE FROM employee WHERE id = ?", id)
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.ExecContext(ctx, "DELETE FROM credential WHERE id = ?", id)
 	return err
 }
 

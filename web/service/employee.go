@@ -10,7 +10,7 @@ import (
 )
 
 type EmployeeService interface {
-	CreateEmployee(ctx context.Context, payload types.EmployeeCreateDTO) (*string, error)
+	CreateEmployee(ctx context.Context, payload types.EmployeeCreateDTO) (*types.Employee, error)
 	ListEmployees(ctx context.Context) ([]types.Employee, error)
 	GetEmployee(ctx context.Context, id string) (*types.Employee, error)
 	UpdateEmployee(ctx context.Context, id string, payload types.EmployeeUpdateDTO) error
@@ -35,7 +35,7 @@ func (s *EmployeeSvc) GetEmployee(ctx context.Context, id string) (*types.Employ
 	return &employee, nil
 }
 
-func (s *EmployeeSvc) CreateEmployee(ctx context.Context, payload types.EmployeeCreateDTO) (*string, error) {
+func (s *EmployeeSvc) CreateEmployee(ctx context.Context, payload types.EmployeeCreateDTO) (*types.Employee, error) {
 	if err := web.CheckPayload(payload); err != nil {
 		return nil, err
 	}
@@ -55,7 +55,13 @@ func (s *EmployeeSvc) CreateEmployee(ctx context.Context, payload types.Employee
 		return nil, err
 	}
 
-	return id, nil
+	e := types.Employee{
+		ID:    *id,
+		Name:  payload.Name,
+		Email: payload.Email,
+		Role:  payload.Role,
+	}
+	return &e, nil
 }
 
 func (s *EmployeeSvc) UpdateEmployee(ctx context.Context, id string, payload types.EmployeeUpdateDTO) error {
