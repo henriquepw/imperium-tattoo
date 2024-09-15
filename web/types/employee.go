@@ -19,3 +19,8 @@ type EmployeeCreateDTO struct {
 	Role     string `json:"role" validate:"required"`
 	Password string `json:"password" validate:"required"`
 }
+
+type EmployeeUpdateDTO struct {
+	Name string `json:"name" validate:"required"`
+	Role string `json:"role" validate:"required"`
+}

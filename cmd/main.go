@@ -37,6 +37,9 @@ func main() {
 	server.HandleFunc("GET /employees", employeeHandler.EmployeesPage)
 	server.HandleFunc("GET /employees/create", employeeHandler.EmployeeCreatePage)
 	server.HandleFunc("POST /employees/create", employeeHandler.EmployeeCreateAction)
+	server.HandleFunc("GET /employees/{id}", employeeHandler.EmployeeEditPage)
+	server.HandleFunc("PUT /employees/{id}", employeeHandler.EmployeeEditAction)
+	server.HandleFunc("DELETE /employees/{id}", employeeHandler.EmployeeDeleteAction)
 
 	authHandler := handler.NewAuthHandler()
 	server.HandleFunc("GET /login", authHandler.LoginPage)
@@ -54,10 +57,9 @@ func main() {
 		http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))).ServeHTTP(w, r)
 	}))
 
+	fmt.Printf("Server running on port %s\n", addr)
 	err = http.ListenAndServe(addr, server)
 	if err != nil {
 		panic(fmt.Sprintf("cannot start server: %s", err))
 	}
-
-	fmt.Println("Server running on port: ", addr)
 }

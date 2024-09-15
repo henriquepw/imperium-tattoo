@@ -1,7 +1,6 @@
 package employee
 
 import (
-	"fmt"
 	"github.com/henriquepw/imperium-tattoo/web/types"
 	"github.com/henriquepw/imperium-tattoo/web/view/layout"
 	"github.com/henriquepw/imperium-tattoo/web/view/ui"
@@ -13,31 +12,15 @@ templ badge(role string, classname ...string) {
 	</span>
 }
 
-func getEmployeeStr(e types.Employee) string {
-	return fmt.Sprintf(
-		"employee={id:\"%s\",name:\"%s\",email:\"%s\",role:\"%s\"}",
-		e.ID,
-		e.Name,
-		e.Email,
-		e.Role,
-	)
-}
-
 templ EmployeesPage(boosted bool, items []types.Employee) {
 	@layout.Dashbaord("Funcionários", boosted) {
-		<div
-			x-data="{ employee: null, create: false }"
-			x-init="$watch('employee', (e) => history.replaceState(null,null,!!e?'?id='+e.id:'?'))"
-		>
+		<div>
 			@layout.PageHeader("Funcionários", []ui.BreadcrumbItem{
 				{Label: "Funcionários", Href: "/employees"},
 			}) {
 				<a href={ templ.URL("employees/create") } class="btn-primary">
 					@ui.Icon("plus")
 				</a>
-				<button @click="create=true">
-					@ui.Icon("plus")
-				</button>
 			}
 			@layout.WithPageLoad() {
 				<section class="w-full card p-0 overflow-hidden">
@@ -53,7 +36,7 @@ templ EmployeesPage(boosted bool, items []types.Employee) {
 						</thead>
 						<tbody>
 							for _, i := range items {
-								<tr>
+								<tr id={ "employee-" + i.ID } class="group [&.htmx-request]:pointer-events-none">
 									<td class="max-w-10 hidden md:table-cell">
 										@badge(i.Role)
 									</td>
@@ -67,10 +50,20 @@ templ EmployeesPage(boosted bool, items []types.Employee) {
 										</div>
 									</td>
 									<td class="hidden md:block">{ i.Email }</td>
-									<td class="max-w-4">
-										<button @click={ getEmployeeStr(i) }>
-											@ui.Icon("edit", "h-4 text-gray-11")
-										</button>
+									<td>
+										<div class="flex gap-4 justify-end">
+											<a href={ templ.URL("employees/" + i.ID) }>
+												@ui.Icon("edit", "h-4 text-gray-11")
+											</a>
+											<button
+												hx-delete={ "employees/" + i.ID }
+												hx-swap="outerHTML"
+												hx-target={ "#employee-" + i.ID }
+												hx-indicator={ "#employee-" + i.ID }
+											>
+												@ui.Indicator("trash", "h-4 text-error-8")
+											</button>
+										</div>
 									</td>
 								</tr>
 							}
@@ -86,16 +79,6 @@ templ EmployeesPage(boosted bool, items []types.Employee) {
 						</tbody>
 					</table>
 				</section>
-				@ui.Modal("!!employee", "employee=null", "Editar Funcionário") {
-					<div>
-						<p x-text="employee?.name"></p>
-						<p x-text="employee?.email"></p>
-						<p x-text="employee?.role"></p>
-					</div>
-				}
-				@ui.Modal("create", "create=false", "Novo Funcionário") {
-					@EmployeeCreateForm(EmployeeCreateFormProps{})
-				}
 			}
 		</div>
 	}

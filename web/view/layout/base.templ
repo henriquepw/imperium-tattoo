@@ -22,7 +22,8 @@ templ Base(title string) {
   feather.replace();
   document.body.addEventListener('htmx:afterSwap', feather.replace);
   document.body.addEventListener('htmx:beforeSwap', function (e) {
-    if (e.detail.xhr.status === 422) {
+    const status = e.detail.xhr.status;
+    if (status === 422 || status === 204) {
       e.detail.shouldSwap = true;
       e.detail.isError = false;
     }

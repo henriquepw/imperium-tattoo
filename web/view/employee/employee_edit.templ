@@ -1,0 +1,45 @@
+package employee
+
+import (
+	"github.com/henriquepw/imperium-tattoo/web/types"
+	"github.com/henriquepw/imperium-tattoo/web/view/layout"
+	"github.com/henriquepw/imperium-tattoo/web/view/ui"
+)
+
+templ EmployeeEditPage(boosted bool, e types.Employee) {
+	@layout.Dashbaord(e.Name, boosted) {
+		@layout.PageHeader(
+			e.Name,
+			[]ui.BreadcrumbItem{
+				{Label: "Funcionários", Href: "/employees"},
+				{Label: "Editar", Href: "/employees/" + e.ID},
+			},
+		)
+		@layout.WithPageLoad() {
+			<section class="card">
+				@EmployeeEditForm(e.ID, types.EmployeeUpdateDTO{Name: e.Name, Role: e.Role}, nil)
+			</section>
+		}
+	}
+}
+
+templ EmployeeEditForm(id string, values types.EmployeeUpdateDTO, errors map[string]string) {
+	<form
+		hx-put={ "/employees/" + id }
+		hx-target="this"
+		hx-swap="outerHTML"
+		hx-indicator="this"
+		class="flex flex-col gap-4 group [&.htmx-request]:pointer-events-none"
+	>
+		@ui.TextInput(ui.TextInputProps{
+			Name:        "name",
+			Label:       "Nome",
+			Placeholder: "Nome do Funcionário",
+			Value:       values.Name,
+			Error:       errors["name"],
+		})
+		@ui.SubmitBtn("save", "Salvando...", "ml-auto") {
+			Salvar
+		}
+	</form>
+}

@@ -22,7 +22,7 @@ func Render(w http.ResponseWriter, r *http.Request, statusCode int, t templ.Comp
 func RenderError(w http.ResponseWriter, r *http.Request, err error, t func(e ServerError) templ.Component) error {
 	slog.Error("render error", "error", err.Error())
 	if e, ok := err.(ServerError); ok {
-		if e.Errors != nil {
+		if e.Errors != nil && t != nil {
 			return Render(w, r, e.StatusCode, t(e))
 		}
 

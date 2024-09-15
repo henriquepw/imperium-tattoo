@@ -1,0 +1,12 @@
+package ui
+
+import "strings"
+
+templ Indicator(icon string, classname ...string) {
+	<div class="items-center gap-1.5 hidden group-[.htmx-request]:flex">
+		@Icon("loader", "h-5 w-5 animate-spin", strings.Join(classname, " "))
+	</div>
+	<div class="flex gap-1.5 group-[.htmx-request]:hidden">
+		@Icon(icon, "h-5 w-5", strings.Join(classname, " "))
+	</div>
+}
