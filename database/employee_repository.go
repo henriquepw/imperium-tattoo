@@ -40,25 +40,19 @@ func (r employeeRepo) Insert(ctx context.Context, payload types.EmployeeCreateDT
 	defer tx.Rollback()
 
 	now := time.Now().UnixMilli()
-	_, err = tx.QueryContext(
+	_, err = tx.ExecContext(
 		ctx,
-		"INSERT INTO employee (id, name, email, role, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
-		id,
-		payload.Name,
-		payload.Email,
-		payload.Role,
-		now,
-		now,
+		"INSERT INTO credential (id, secret, type) VALUES (?, ?, ?)",
+		payload.Email, payload.Password, "EMPLOYEE",
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = tx.QueryContext(
+	_, err = tx.ExecContext(
 		ctx,
-		"INSERT INTO credential (id, secret) VALUES (?, ?)",
-		payload.Email,
-		payload.Password,
+		"INSERT INTO employee (id, name, email, role, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
+		id, payload.Name, payload.Email, payload.Role, now, now,
 	)
 	if err != nil {
 		return nil, err
@@ -108,19 +102,8 @@ func (r employeeRepo) Update(ctx context.Context, id string, payload types.Emplo
 	return err
 }
 
-func (r employeeRepo) Delete(ctx context.Context, id string) error {
-	tx, err := r.db.BeginTx(ctx, nil)
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
-
-	_, err = tx.ExecContext(ctx, "DELETE FROM employee WHERE id = ?", id)
-	if err != nil {
-		return err
-	}
-
-	_, err = tx.ExecContext(ctx, "DELETE FROM credential WHERE id = ?", id)
+func (r employeeRepo) Delete(ctx context.Context, email string) error {
+	_, err := r.db.ExecContext(ctx, "DELETE FROM credential WHERE id = ?", email)
 	return err
 }
 

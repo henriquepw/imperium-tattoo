@@ -77,5 +77,10 @@ func (s *EmployeeSvc) ListEmployees(ctx context.Context) ([]types.Employee, erro
 }
 
 func (s *EmployeeSvc) DeleteEmployee(ctx context.Context, id string) error {
-	return s.repo.Delete(ctx, id)
+	e, err := s.repo.Get(ctx, id)
+	if err != nil {
+		return web.NotFoundError()
+	}
+
+	return s.repo.Delete(ctx, e.Email)
 }

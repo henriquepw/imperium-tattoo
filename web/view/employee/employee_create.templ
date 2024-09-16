@@ -20,6 +20,7 @@ templ EmployeeCreateForm(props EmployeeCreateFormProps) {
 		@htmx:before-swap="(e) => {
       if (e.detail.xhr.status === 201) {
         createOpen = false;
+				count++;
       }
     }"
 	>
@@ -43,7 +44,7 @@ templ EmployeeCreateForm(props EmployeeCreateFormProps) {
 	</form>
 }
 
-templ OobEmployee(i types.Employee) {
+templ OobNewEmployee(i types.Employee) {
 	<template>
 		<tbody hx-swap-oob="beforeend:#employees">
 			@EmployeeRow(i)

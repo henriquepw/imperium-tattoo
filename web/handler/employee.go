@@ -51,8 +51,11 @@ func (h EmployeeHandler) EmployeeCreateAction(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	web.Render(w, r, http.StatusCreated, employee.EmployeeCreateForm(employee.EmployeeCreateFormProps{}))
-	web.Render(w, r, http.StatusCreated, employee.OobEmployee(*e))
+	web.Render(
+		w, r, http.StatusCreated,
+		employee.EmployeeCreateForm(employee.EmployeeCreateFormProps{}),
+		employee.OobNewEmployee(*e),
+	)
 }
 
 func (h EmployeeHandler) EmployeeEditAction(w http.ResponseWriter, r *http.Request) {
@@ -71,13 +74,16 @@ func (h EmployeeHandler) EmployeeEditAction(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	web.Render(w, r, http.StatusOK, employee.EmployeeEditForm(nil))
-	web.Render(w, r, http.StatusCreated, employee.OobEmployeeUpdated(types.Employee{
-		ID:    id,
-		Name:  payload.Name,
-		Role:  payload.Role,
-		Email: r.Form.Get("email"),
-	}))
+	web.Render(
+		w, r, http.StatusOK,
+		employee.EmployeeEditForm(nil),
+		employee.OobEmployeeUpdated(types.Employee{
+			ID:    id,
+			Name:  payload.Name,
+			Role:  payload.Role,
+			Email: r.Form.Get("email"),
+		}),
+	)
 }
 
 func (h EmployeeHandler) EmployeeDeleteAction(w http.ResponseWriter, r *http.Request) {

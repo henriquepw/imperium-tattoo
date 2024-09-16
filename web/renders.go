@@ -12,10 +12,17 @@ func RenderPage(w http.ResponseWriter, r *http.Request, comp func(boosted bool) 
 	return Render(w, r, http.StatusOK, t)
 }
 
-func Render(w http.ResponseWriter, r *http.Request, statusCode int, t templ.Component) error {
+func Render(w http.ResponseWriter, r *http.Request, statusCode int, templates ...templ.Component) error {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(statusCode)
-	return t.Render(r.Context(), w)
+
+	for _, t := range templates {
+		if err := t.Render(r.Context(), w); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func RenderError(w http.ResponseWriter, r *http.Request, err error, t func(e ServerError) templ.Component) error {

@@ -15,7 +15,7 @@ templ badge(role string, classname ...string) {
 
 func getEmployeeStr(e types.Employee) string {
 	return fmt.Sprintf(
-		"employee={id:\"%s\",name:\"%s\",role:\"%s\",email:\"%s\"}",
+		"employee={id:'%s',name:'%s',role:'%s',email:'%s'}",
 		e.ID, e.Name, e.Role, e.Email,
 	)
 }
@@ -45,6 +45,7 @@ templ EmployeeRow(i types.Employee) {
 					hx-swap="outerHTML"
 					hx-target={ "#employee-" + i.ID }
 					hx-indicator={ "#employee-" + i.ID }
+					@click="count=Math.max(0,count-1)"
 				>
 					@ui.Indicator("trash", "h-4 text-error-8")
 				</button>
@@ -55,7 +56,7 @@ templ EmployeeRow(i types.Employee) {
 
 templ EmployeesPage(boosted bool, items []types.Employee) {
 	@layout.Dashbaord("Funcionários", boosted) {
-		<div x-data="{createOpen: false, employee: null}">
+		<div x-data={ fmt.Sprintf("{createOpen: false, employee: null, count: %d}", len(items)) }>
 			@layout.PageHeader("Funcionários", []ui.BreadcrumbItem{
 				{Label: "Funcionários", Href: "/employees"},
 			}) {
@@ -79,7 +80,7 @@ templ EmployeesPage(boosted bool, items []types.Employee) {
 							for _, i := range items {
 								@EmployeeRow(i)
 							}
-							if len(items) == 0 {
+							<template x-if="count === 0">
 								<tr>
 									<td colspan="4" class="bg-warning-2">
 										<div class="text-center text-warning-12">
@@ -87,7 +88,7 @@ templ EmployeesPage(boosted bool, items []types.Employee) {
 										</div>
 									</td>
 								</tr>
-							}
+							</template>
 						</tbody>
 					</table>
 				</section>
