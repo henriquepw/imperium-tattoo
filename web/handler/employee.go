@@ -8,7 +8,7 @@ import (
 	"github.com/henriquepw/imperium-tattoo/pkg/httputil"
 	"github.com/henriquepw/imperium-tattoo/web/service"
 	"github.com/henriquepw/imperium-tattoo/web/types"
-	"github.com/henriquepw/imperium-tattoo/web/view/employee"
+	"github.com/henriquepw/imperium-tattoo/web/view/pages"
 )
 
 type EmployeeHandler struct {
@@ -23,12 +23,12 @@ func (h EmployeeHandler) EmployeesPage(w http.ResponseWriter, r *http.Request) {
 	employees, err := h.svc.ListEmployees(r.Context())
 	if err != nil {
 		httputil.RenderError(w, r, err, func(e errors.ServerError) templ.Component {
-			return employee.EmployeesPage(true, []types.Employee{})
+			return pages.EmployeesPage(true, []types.Employee{})
 		})
 	}
 
 	httputil.RenderPage(w, r, func(boosted bool) templ.Component {
-		return employee.EmployeesPage(boosted, employees)
+		return pages.EmployeesPage(boosted, employees)
 	})
 }
 
@@ -44,18 +44,15 @@ func (h EmployeeHandler) EmployeeCreateAction(w http.ResponseWriter, r *http.Req
 	e, err := h.svc.CreateEmployee(r.Context(), payload)
 	if err != nil {
 		httputil.RenderError(w, r, err, func(e errors.ServerError) templ.Component {
-			return employee.EmployeeCreateForm(employee.EmployeeCreateFormProps{
-				Values: payload,
-				Errors: e.Errors,
-			})
+			return pages.EmployeeCreateForm(payload, e.Errors)
 		})
 		return
 	}
 
 	httputil.Render(
 		w, r, http.StatusCreated,
-		employee.EmployeeCreateForm(employee.EmployeeCreateFormProps{}),
-		employee.OobNewEmployee(*e),
+		pages.EmployeeCreateForm(types.EmployeeCreateDTO{}, nil),
+		pages.OobNewEmployee(*e),
 	)
 }
 
@@ -70,15 +67,15 @@ func (h EmployeeHandler) EmployeeEditAction(w http.ResponseWriter, r *http.Reque
 	err := h.svc.UpdateEmployee(r.Context(), id, payload)
 	if err != nil {
 		httputil.RenderError(w, r, err, func(e errors.ServerError) templ.Component {
-			return employee.EmployeeEditForm(e.Errors)
+			return pages.EmployeeEditForm(e.Errors)
 		})
 		return
 	}
 
 	httputil.Render(
 		w, r, http.StatusOK,
-		employee.EmployeeEditForm(nil),
-		employee.OobEmployeeUpdated(types.Employee{
+		pages.EmployeeEditForm(nil),
+		pages.OobEmployeeUpdated(types.Employee{
 			ID:    id,
 			Name:  payload.Name,
 			Role:  payload.Role,

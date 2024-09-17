@@ -1,21 +1,21 @@
-package home
+package pages
 
 import (
 	"github.com/henriquepw/imperium-tattoo/web/view/layout"
 	"github.com/henriquepw/imperium-tattoo/web/view/ui"
 )
 
-templ HomePage(boosted bool) {
+templ ClientsPage(boosted bool) {
 	@layout.Dashbaord("Painel", boosted) {
 		@layout.PageHeader(
-			"Painel",
+			"Clientes",
 			[]ui.BreadcrumbItem{
-				{Label: "Painel", Href: "/dashboard"},
+				{Label: "Clientes", Href: "/clients"},
 			},
 		)
 		@layout.WithPageLoad() {
 			<section>
-				MAIN
+				CLIENTS
 			</section>
 		}
 	}

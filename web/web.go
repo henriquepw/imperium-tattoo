@@ -10,7 +10,7 @@ import (
 	"github.com/henriquepw/imperium-tattoo/pkg/httputil"
 	"github.com/henriquepw/imperium-tattoo/web/handler"
 	"github.com/henriquepw/imperium-tattoo/web/service"
-	"github.com/henriquepw/imperium-tattoo/web/view/layout"
+	"github.com/henriquepw/imperium-tattoo/web/view/pages"
 )
 
 type WebServer struct {
@@ -27,7 +27,7 @@ func (s *WebServer) Start() error {
 	server.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(r.URL.Path)
 		if r.URL.Path != "/" {
-			httputil.Render(w, r, http.StatusOK, layout.NotFoundPage())
+			httputil.Render(w, r, http.StatusOK, pages.NotFoundPage())
 			return
 		}
 

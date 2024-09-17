@@ -24,7 +24,7 @@ tmp/
 # project build
 main
 *templ.go
-*.txt
+*templ.txt
 static/css/output.css
 
 # mac stuff
