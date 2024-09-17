@@ -5,7 +5,9 @@ import (
 	"fmt"
 
 	"github.com/henriquepw/imperium-tattoo/database"
-	"github.com/henriquepw/imperium-tattoo/web"
+	"github.com/henriquepw/imperium-tattoo/pkg/errors"
+	"github.com/henriquepw/imperium-tattoo/pkg/hash"
+	"github.com/henriquepw/imperium-tattoo/pkg/validate"
 	"github.com/henriquepw/imperium-tattoo/web/types"
 )
 
@@ -29,27 +31,27 @@ func (s *EmployeeSvc) GetEmployee(ctx context.Context, id string) (*types.Employ
 	employee, err := s.repo.Get(ctx, id)
 	if err != nil {
 		fmt.Print(err)
-		return nil, web.NotFoundError("Funcionário não encontrado")
+		return nil, errors.NotFound("Funcionário não encontrado")
 	}
 
 	return &employee, nil
 }
 
 func (s *EmployeeSvc) CreateEmployee(ctx context.Context, payload types.EmployeeCreateDTO) (*types.Employee, error) {
-	if err := web.CheckPayload(payload); err != nil {
+	if err := validate.CheckPayload(payload); err != nil {
 		return nil, err
 	}
 
 	if s.repo.HasEmail(ctx, payload.Email) {
-		return nil, web.InvalidRequestDataError(map[string]string{"email": "Email já cadastrado"})
+		return nil, errors.InvalidRequestData(map[string]string{"email": "Email já cadastrado"})
 	}
 
-	hash, err := web.HashPassword(payload.Password)
+	passwordHash, err := hash.HashPassword(payload.Password)
 	if err != nil {
 		return nil, err
 	}
 
-	payload.Password = hash
+	payload.Password = passwordHash
 	id, err := s.repo.Insert(ctx, payload)
 	if err != nil {
 		return nil, err
@@ -65,7 +67,7 @@ func (s *EmployeeSvc) CreateEmployee(ctx context.Context, payload types.Employee
 }
 
 func (s *EmployeeSvc) UpdateEmployee(ctx context.Context, id string, payload types.EmployeeUpdateDTO) error {
-	if err := web.CheckPayload(payload); err != nil {
+	if err := validate.CheckPayload(payload); err != nil {
 		return err
 	}
 
@@ -79,7 +81,7 @@ func (s *EmployeeSvc) ListEmployees(ctx context.Context) ([]types.Employee, erro
 func (s *EmployeeSvc) DeleteEmployee(ctx context.Context, id string) error {
 	e, err := s.repo.Get(ctx, id)
 	if err != nil {
-		return web.NotFoundError()
+		return errors.NotFound()
 	}
 
 	return s.repo.Delete(ctx, e.Email)

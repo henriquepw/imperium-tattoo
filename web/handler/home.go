@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 
-	"github.com/henriquepw/imperium-tattoo/web"
+	"github.com/henriquepw/imperium-tattoo/pkg/httputil"
 	"github.com/henriquepw/imperium-tattoo/web/view/home"
 )
 
@@ -14,5 +14,5 @@ func NewHomeHandler() HomeHandler {
 }
 
 func (h HomeHandler) HomePage(w http.ResponseWriter, r *http.Request) {
-	web.RenderPage(w, r, home.HomePage)
+	httputil.RenderPage(w, r, home.HomePage)
 }

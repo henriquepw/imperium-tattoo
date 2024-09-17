@@ -4,7 +4,8 @@ import (
 	"net/http"
 
 	"github.com/a-h/templ"
-	"github.com/henriquepw/imperium-tattoo/web"
+	"github.com/henriquepw/imperium-tattoo/pkg/errors"
+	"github.com/henriquepw/imperium-tattoo/pkg/httputil"
 	"github.com/henriquepw/imperium-tattoo/web/service"
 	"github.com/henriquepw/imperium-tattoo/web/types"
 	"github.com/henriquepw/imperium-tattoo/web/view/employee"
@@ -21,12 +22,12 @@ func NewEmployeeHandler(svc service.EmployeeService) *EmployeeHandler {
 func (h EmployeeHandler) EmployeesPage(w http.ResponseWriter, r *http.Request) {
 	employees, err := h.svc.ListEmployees(r.Context())
 	if err != nil {
-		web.RenderError(w, r, err, func(e web.ServerError) templ.Component {
+		httputil.RenderError(w, r, err, func(e errors.ServerError) templ.Component {
 			return employee.EmployeesPage(true, []types.Employee{})
 		})
 	}
 
-	web.RenderPage(w, r, func(boosted bool) templ.Component {
+	httputil.RenderPage(w, r, func(boosted bool) templ.Component {
 		return employee.EmployeesPage(boosted, employees)
 	})
 }
@@ -42,7 +43,7 @@ func (h EmployeeHandler) EmployeeCreateAction(w http.ResponseWriter, r *http.Req
 
 	e, err := h.svc.CreateEmployee(r.Context(), payload)
 	if err != nil {
-		web.RenderError(w, r, err, func(e web.ServerError) templ.Component {
+		httputil.RenderError(w, r, err, func(e errors.ServerError) templ.Component {
 			return employee.EmployeeCreateForm(employee.EmployeeCreateFormProps{
 				Values: payload,
 				Errors: e.Errors,
@@ -51,7 +52,7 @@ func (h EmployeeHandler) EmployeeCreateAction(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	web.Render(
+	httputil.Render(
 		w, r, http.StatusCreated,
 		employee.EmployeeCreateForm(employee.EmployeeCreateFormProps{}),
 		employee.OobNewEmployee(*e),
@@ -68,13 +69,13 @@ func (h EmployeeHandler) EmployeeEditAction(w http.ResponseWriter, r *http.Reque
 
 	err := h.svc.UpdateEmployee(r.Context(), id, payload)
 	if err != nil {
-		web.RenderError(w, r, err, func(e web.ServerError) templ.Component {
+		httputil.RenderError(w, r, err, func(e errors.ServerError) templ.Component {
 			return employee.EmployeeEditForm(e.Errors)
 		})
 		return
 	}
 
-	web.Render(
+	httputil.Render(
 		w, r, http.StatusOK,
 		employee.EmployeeEditForm(nil),
 		employee.OobEmployeeUpdated(types.Employee{
@@ -89,7 +90,7 @@ func (h EmployeeHandler) EmployeeEditAction(w http.ResponseWriter, r *http.Reque
 func (h EmployeeHandler) EmployeeDeleteAction(w http.ResponseWriter, r *http.Request) {
 	err := h.svc.DeleteEmployee(r.Context(), r.PathValue("id"))
 	if err != nil {
-		web.RenderError(w, r, err, nil)
+		httputil.RenderError(w, r, err, nil)
 		return
 	}
 

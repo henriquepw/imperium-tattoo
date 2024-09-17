@@ -1,30 +1,38 @@
-package main
+package web
 
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 
 	"github.com/henriquepw/imperium-tattoo/database"
+	"github.com/henriquepw/imperium-tattoo/pkg/httputil"
 	"github.com/henriquepw/imperium-tattoo/web/handler"
 	"github.com/henriquepw/imperium-tattoo/web/service"
-
-	_ "github.com/joho/godotenv/autoload"
-	_ "github.com/tursodatabase/libsql-client-go/libsql"
+	"github.com/henriquepw/imperium-tattoo/web/view/layout"
 )
 
-func main() {
-	addr := ":" + os.Getenv("PORT")
+type WebServer struct {
+	db *sql.DB
+}
 
-	db, err := sql.Open("libsql", os.Getenv("DB_URL"))
-	if err != nil {
-		log.Fatalf("failed to open db: %s", err.Error())
-	}
-	defer db.Close()
+func NewServer(db *sql.DB) *WebServer {
+	return &WebServer{db}
+}
 
+func (s *WebServer) Start() error {
 	server := http.NewServeMux()
+
+	server.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println(r.URL.Path)
+		if r.URL.Path != "/" {
+			httputil.Render(w, r, http.StatusOK, layout.NotFoundPage())
+			return
+		}
+
+		http.Redirect(w, r, "/dashboard", http.StatusPermanentRedirect)
+	})
 
 	homeHandler := handler.NewHomeHandler()
 	server.HandleFunc("/dashboard", homeHandler.HomePage)
@@ -32,7 +40,7 @@ func main() {
 	clientHandler := handler.NewClientHandler()
 	server.HandleFunc("GET /clients", clientHandler.ClientsPage)
 
-	employeeSvc := service.NewEmployeeService(database.NewEmployeeRepo(db))
+	employeeSvc := service.NewEmployeeService(database.NewEmployeeRepo(s.db))
 	employeeHandler := handler.NewEmployeeHandler(employeeSvc)
 	server.HandleFunc("GET /employees", employeeHandler.EmployeesPage)
 	server.HandleFunc("POST /employees/create", employeeHandler.EmployeeCreateAction)
@@ -55,9 +63,7 @@ func main() {
 		http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))).ServeHTTP(w, r)
 	}))
 
+	addr := ":" + os.Getenv("PORT")
 	fmt.Printf("Server running on port %s\n", addr)
-	err = http.ListenAndServe(addr, server)
-	if err != nil {
-		panic(fmt.Sprintf("cannot start server: %s", err))
-	}
+	return http.ListenAndServe(addr, server)
 }

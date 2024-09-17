@@ -1,15 +1,16 @@
-package web
+package validate
 
 import (
 	"reflect"
 	"strings"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/henriquepw/imperium-tattoo/pkg/errors"
 )
 
 var validate *validator.Validate
 
-func GetValidate() *validator.Validate {
+func getValidate() *validator.Validate {
 	if validate == nil {
 		validate = validator.New(validator.WithRequiredStructEnabled())
 
@@ -66,9 +67,8 @@ func getTagError(tag, param string) string {
 }
 
 func CheckPayload[T any](val T) error {
-	v := GetValidate()
+	v := getValidate()
 	err := v.Struct(val)
-
 	if err == nil {
 		return nil
 	}
@@ -77,11 +77,11 @@ func CheckPayload[T any](val T) error {
 		return err
 	}
 
-	errors := make(map[string]string)
+	e := make(map[string]string)
 	for _, field := range err.(validator.ValidationErrors) {
 		name := strings.Join(strings.Split(field.Namespace(), ".")[1:], ".")
-		errors[name] = getTagError(field.Tag(), field.Param())
+		e[name] = getTagError(field.Tag(), field.Param())
 	}
 
-	return InvalidRequestDataError(errors)
+	return errors.InvalidRequestData(e)
 }

@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/henriquepw/imperium-tattoo/web"
+	"github.com/henriquepw/imperium-tattoo/pkg/customid"
 	"github.com/henriquepw/imperium-tattoo/web/types"
 )
 
@@ -28,7 +28,7 @@ func NewEmployeeRepo(db *sql.DB) *employeeRepo {
 }
 
 func (r employeeRepo) Insert(ctx context.Context, payload types.EmployeeCreateDTO) (*string, error) {
-	id, err := web.NewID()
+	id, err := customid.New()
 	if err != nil {
 		return nil, err
 	}

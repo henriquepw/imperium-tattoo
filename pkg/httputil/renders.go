@@ -1,10 +1,11 @@
-package web
+package httputil
 
 import (
 	"log/slog"
 	"net/http"
 
 	"github.com/a-h/templ"
+	"github.com/henriquepw/imperium-tattoo/pkg/errors"
 )
 
 func RenderPage(w http.ResponseWriter, r *http.Request, comp func(boosted bool) templ.Component) error {
@@ -25,9 +26,9 @@ func Render(w http.ResponseWriter, r *http.Request, statusCode int, templates ..
 	return nil
 }
 
-func RenderError(w http.ResponseWriter, r *http.Request, err error, t func(e ServerError) templ.Component) error {
+func RenderError(w http.ResponseWriter, r *http.Request, err error, t func(e errors.ServerError) templ.Component) error {
 	slog.Error("render error", "error", err.Error())
-	if e, ok := err.(ServerError); ok {
+	if e, ok := err.(errors.ServerError); ok {
 		if e.Errors != nil && t != nil {
 			return Render(w, r, e.StatusCode, t(e))
 		}

@@ -3,7 +3,7 @@ package types
 import (
 	"time"
 
-	"github.com/henriquepw/imperium-tattoo/web"
+	"github.com/henriquepw/imperium-tattoo/pkg/customid"
 )
 
 type Employee struct {
@@ -16,7 +16,7 @@ type Employee struct {
 }
 
 func NewEmployee(payload EmployeeCreateDTO) (*Employee, error) {
-	id, err := web.NewID()
+	id, err := customid.New()
 	if err != nil {
 		return nil, err
 	}

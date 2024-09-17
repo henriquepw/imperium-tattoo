@@ -54,7 +54,7 @@ watch/templ:
 # run air to detect any go file changes to re-build and re-run the server.
 watch/server:
 	air \
-	--build.cmd "go build -o .tmp/main cmd/main.go" \
+	--build.cmd "go build -o .tmp/main main.go" \
 	--build.bin ".tmp/main" \
 	--build.delay "100" \
 	--build.exclude_dir ".tmp" \

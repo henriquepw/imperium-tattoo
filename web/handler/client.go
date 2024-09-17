@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 
-	"github.com/henriquepw/imperium-tattoo/web"
+	"github.com/henriquepw/imperium-tattoo/pkg/httputil"
 	"github.com/henriquepw/imperium-tattoo/web/view/client"
 )
 
@@ -14,5 +14,5 @@ func NewClientHandler() ClientHandler {
 }
 
 func (h ClientHandler) ClientsPage(w http.ResponseWriter, r *http.Request) {
-	web.RenderPage(w, r, client.ClientsPage)
+	httputil.RenderPage(w, r, client.ClientsPage)
 }

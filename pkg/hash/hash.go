@@ -1,4 +1,4 @@
-package web
+package hash
 
 import (
 	"golang.org/x/crypto/bcrypt"
