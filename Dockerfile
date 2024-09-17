@@ -7,7 +7,7 @@ RUN wget -O tailwind https://github.com/tailwindlabs/tailwindcss/releases/downlo
 
 RUN go install github.com/a-h/templ/cmd/templ@latest && templ generate
 
-RUN go build -o main ./cmd/main.go
+RUN go build -o main main.go
 
 FROM alpine:latest
 WORKDIR /app
