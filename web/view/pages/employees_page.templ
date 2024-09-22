@@ -117,12 +117,22 @@ templ EmployeeEditForm(errors map[string]string) {
       }
     }"
 	>
-		@ui.FormField("Nome", errors["name"]) {
-			<input class="input" name="name" type="text" placeholder="nome do funcionário" :value="employee?.name"/>
-		}
-		@ui.FormField("Cargo", errors["role"]) {
-			<input class="input" name="role" type="text" placeholder="nome do funcionário" :value="employee?.role"/>
-		}
+		@ui.TextInput(ui.TextInputOps{
+			Required:    true,
+			Label:       "Nome",
+			Name:        "name",
+			Placeholder: "Nome do Funcionário",
+			Error:       errors["name"],
+			XValue:      "employee?.name",
+		})
+		@ui.TextInput(ui.TextInputOps{
+			Required:    true,
+			Label:       "Cargo",
+			Name:        "role",
+			Placeholder: "Nome do Funcionário",
+			Error:       errors["role"],
+			XValue:      "employee?.role",
+		})
 		<input class="hidden" name="email" type="email" :value="employee?.email"/>
 		@ui.SubmitBtn("save", "Salvando...", "ml-auto") {
 			Salvar
@@ -144,16 +154,19 @@ templ EmployeeCreateForm(values types.EmployeeCreateDTO, errors map[string]strin
       }
     }"
 	>
-		@ui.TextInput(ui.TextInputProps{
-			Name:        "name",
+		@ui.TextInput(ui.TextInputOps{
+			Required:    true,
 			Label:       "Nome",
+			Name:        "name",
 			Placeholder: "Nome do Funcionário",
 			Value:       values.Name,
 			Error:       errors["name"],
 		})
-		@ui.TextInput(ui.TextInputProps{
+		@ui.TextInput(ui.TextInputOps{
+			Required:    true,
 			Name:        "email",
 			Label:       "Email",
+			Type:        "email",
 			Placeholder: "exemplo@gmail.com",
 			Value:       values.Email,
 			Error:       errors["email"],

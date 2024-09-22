@@ -14,10 +14,10 @@ func getValidate() *validator.Validate {
 	if validate == nil {
 		validate = validator.New(validator.WithRequiredStructEnabled())
 
-		validate.RegisterAlias("cnpj", "numeric,len=14")
-		validate.RegisterAlias("cpf", "numeric,len=11")
-		validate.RegisterAlias("phone", "numeric,len=11")
+		validate.RegisterAlias("cpf", "len=14")
+		validate.RegisterAlias("phone", "len=15")
 		validate.RegisterAlias("id", "uppercase,alphanum")
+		validate.RegisterAlias("state", "uppercase,len=2")
 
 		validate.RegisterTagNameFunc(func(fld reflect.StructField) string {
 			name := strings.SplitN(fld.Tag.Get("json"), ",", 2)[0]
@@ -43,6 +43,8 @@ func getTagError(tag, param string) string {
 		return "CNPJ inválido"
 	case "date":
 		return "Data inválida"
+	case "state":
+		return "Estado inválido"
 	case "phone":
 		return "Telefone inválido"
 	case "len":
@@ -66,7 +68,7 @@ func getTagError(tag, param string) string {
 	return "Campo inválido"
 }
 
-func CheckPayload[T any](val T) error {
+func CheckPayload[T any](val T) *errors.ServerError {
 	v := getValidate()
 	err := v.Struct(val)
 	if err == nil {
@@ -74,7 +76,7 @@ func CheckPayload[T any](val T) error {
 	}
 
 	if _, ok := err.(*validator.InvalidValidationError); ok {
-		return err
+		return errors.InvalidData()
 	}
 
 	e := make(map[string]string)

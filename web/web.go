@@ -8,8 +8,8 @@ import (
 
 	"github.com/henriquepw/imperium-tattoo/database"
 	"github.com/henriquepw/imperium-tattoo/pkg/httputil"
-	"github.com/henriquepw/imperium-tattoo/web/handler"
-	"github.com/henriquepw/imperium-tattoo/web/service"
+	"github.com/henriquepw/imperium-tattoo/web/handlers"
+	"github.com/henriquepw/imperium-tattoo/web/services"
 	"github.com/henriquepw/imperium-tattoo/web/view/pages"
 )
 
@@ -34,20 +34,23 @@ func (s *WebServer) Start() error {
 		http.Redirect(w, r, "/dashboard", http.StatusPermanentRedirect)
 	})
 
-	homeHandler := handler.NewHomeHandler()
+	homeHandler := handlers.NewHomeHandler()
 	server.HandleFunc("/dashboard", homeHandler.HomePage)
 
-	clientHandler := handler.NewClientHandler()
+	clientStore := database.NewClientStore(s.db)
+	clientSVC := services.NewClientService(clientStore)
+	clientHandler := handlers.NewClientHandler(clientSVC)
 	server.HandleFunc("GET /clients", clientHandler.ClientsPage)
+	server.HandleFunc("POST /clients/create", clientHandler.CreateClientAction)
 
-	employeeSvc := service.NewEmployeeService(database.NewEmployeeRepo(s.db))
-	employeeHandler := handler.NewEmployeeHandler(employeeSvc)
+	employeeSvc := services.NewEmployeeService(database.NewEmployeeRepo(s.db))
+	employeeHandler := handlers.NewEmployeeHandler(employeeSvc)
 	server.HandleFunc("GET /employees", employeeHandler.EmployeesPage)
 	server.HandleFunc("POST /employees/create", employeeHandler.EmployeeCreateAction)
 	server.HandleFunc("PUT /employees/{id}", employeeHandler.EmployeeEditAction)
 	server.HandleFunc("DELETE /employees/{id}", employeeHandler.EmployeeDeleteAction)
 
-	authHandler := handler.NewAuthHandler()
+	authHandler := handlers.NewAuthHandler()
 	server.HandleFunc("GET /login", authHandler.LoginPage)
 	server.HandleFunc("POST /login", authHandler.Login)
 	server.HandleFunc("/logout", authHandler.Logout)

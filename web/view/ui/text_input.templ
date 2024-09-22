@@ -1,28 +1,47 @@
 package ui
 
-type TextInputProps struct {
+type TextInputOps struct {
 	Label       string
 	Error       string
 	Class       string
 	Name        string
 	Value       string
+	XValue      string
 	Type        string
 	Placeholder string
+	Mask        string
+	Required    bool
+	EnterHint   string
 }
 
-templ TextInput(p TextInputProps) {
-	@FormField(p.Label, p.Error, p.Class) {
+templ TextInput(ops TextInputOps) {
+	@FormField(ops.Name, ops.Label, ops.Error, ops.Required, ops.Class) {
 		<input
-			name={ p.Name }
-			placeholder={ p.Placeholder }
-			value={ p.Value }
-			type={ p.Type }
-			class="
-        rounded-md px-2 h-9 bg-gray-1 border outline-none
-        placeholder:text-gray-10
-        hover:border-gray-10 active:border-accent-10
-        focus:border-accent-10 focus:ring-2 focus:ring-accent-10
-      "
+			class="input"
+			name={ ops.Name }
+			type={ ops.Type }
+			placeholder={ ops.Placeholder }
+			if ops.Mask !="" {
+				x-mask={ ops.Mask }
+			}
+			if ops.Error !="" {
+				aria-invalid="true"
+				aria-errormessage={ ops.Error }
+			}
+			if ops.Value !="" {
+				value={ ops.Value }
+			}
+			if ops.XValue !="" {
+				:value={ ops.XValue }
+			}
+			if ops.Required {
+				required
+			}
+			if ops.EnterHint !="" {
+				enterkeyhint={ ops.EnterHint }
+			} else {
+				enterkeyhint="next"
+			}
 		/>
 	}
 }

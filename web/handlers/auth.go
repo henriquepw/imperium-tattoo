@@ -1,9 +1,8 @@
-package handler
+package handlers
 
 import (
 	"net/http"
 
-	"github.com/henriquepw/imperium-tattoo/pkg/errors"
 	"github.com/henriquepw/imperium-tattoo/pkg/httputil"
 	"github.com/henriquepw/imperium-tattoo/pkg/validate"
 	"github.com/henriquepw/imperium-tattoo/web/types"
@@ -38,14 +37,13 @@ func (h AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := validate.CheckPayload(payload); err != nil {
-		e := err.(errors.ServerError).Errors
-		if e == nil {
-			e = map[string]string{"password": "Email e/ou senha inválidos"}
+		if err.Errors == nil {
+			err.Errors = map[string]string{"password": "Email e/ou senha inválidos"}
 		}
 
 		httputil.Render(w, r, http.StatusOK, auth.LoginForm(auth.LoginFormData{
 			Values: payload,
-			Errors: err.(errors.ServerError).Errors,
+			Errors: err.Errors,
 		}))
 		return
 	}

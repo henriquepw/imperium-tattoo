@@ -13,14 +13,14 @@ type LoginFormData struct {
 
 templ LoginForm(data LoginFormData) {
 	<form hx-post="/login" hx-swap="outerHTML" class="flex flex-col gap-4">
-		@ui.TextInput(ui.TextInputProps{
+		@ui.TextInput(ui.TextInputOps{
 			Name:        "username",
 			Label:       "Usuário",
 			Placeholder: "digite seu usuário",
 			Value:       data.Values.Username,
 			Error:       data.Errors["username"],
 		})
-		@ui.TextInput(ui.TextInputProps{
+		@ui.TextInput(ui.TextInputOps{
 			Name:        "password",
 			Label:       "Senha",
 			Placeholder: "digite sua senha",

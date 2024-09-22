@@ -1,21 +1,22 @@
-package handler
+package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/a-h/templ"
 	"github.com/henriquepw/imperium-tattoo/pkg/errors"
 	"github.com/henriquepw/imperium-tattoo/pkg/httputil"
-	"github.com/henriquepw/imperium-tattoo/web/service"
+	"github.com/henriquepw/imperium-tattoo/web/services"
 	"github.com/henriquepw/imperium-tattoo/web/types"
 	"github.com/henriquepw/imperium-tattoo/web/view/pages"
 )
 
 type EmployeeHandler struct {
-	svc service.EmployeeService
+	svc services.EmployeeService
 }
 
-func NewEmployeeHandler(svc service.EmployeeService) *EmployeeHandler {
+func NewEmployeeHandler(svc services.EmployeeService) *EmployeeHandler {
 	return &EmployeeHandler{svc}
 }
 
@@ -23,7 +24,7 @@ func (h EmployeeHandler) EmployeesPage(w http.ResponseWriter, r *http.Request) {
 	employees, err := h.svc.ListEmployees(r.Context())
 	if err != nil {
 		httputil.RenderError(w, r, err, func(e errors.ServerError) templ.Component {
-			return pages.EmployeesPage(true, []types.Employee{})
+			return pages.EmployeesPage(r.Header.Get("HX-Boosted") == "true", nil)
 		})
 	}
 
@@ -44,6 +45,7 @@ func (h EmployeeHandler) EmployeeCreateAction(w http.ResponseWriter, r *http.Req
 	e, err := h.svc.CreateEmployee(r.Context(), payload)
 	if err != nil {
 		httputil.RenderError(w, r, err, func(e errors.ServerError) templ.Component {
+			fmt.Print("aqui")
 			return pages.EmployeeCreateForm(payload, e.Errors)
 		})
 		return

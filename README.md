@@ -1,8 +1,12 @@
 ### Tasks
 - [X] Not found page
-- [ ] Redirect / to /dashboard
-- [ ] Register Clients
-- [ ] List Clients
+- [X] Redirect / to /dashboard
+- [X] Register Clients
+- [-] List Clients
 - [ ] Edit Clients
+- [ ] Add Client Process
 - [ ] Login
-- [ ] Profile Page
+- [ ] Logout
+- [ ] Profile
+- [ ] Config esbuild
+

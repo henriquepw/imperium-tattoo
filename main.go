@@ -13,6 +13,8 @@ import (
 )
 
 func main() {
+	os.Setenv("TZ", "UTC")
+
 	db, err := sql.Open("libsql", os.Getenv("DB_URL"))
 	if err != nil {
 		log.Fatalf("failed to open db: %s", err.Error())

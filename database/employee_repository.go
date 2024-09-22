@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/henriquepw/imperium-tattoo/pkg/customid"
+	"github.com/henriquepw/imperium-tattoo/pkg/date"
 	"github.com/henriquepw/imperium-tattoo/web/types"
 )
 
@@ -39,7 +40,7 @@ func (r employeeRepo) Insert(ctx context.Context, payload types.EmployeeCreateDT
 	}
 	defer tx.Rollback()
 
-	now := time.Now().UnixMilli()
+	now := date.FormatToISO(time.Now())
 	_, err = tx.ExecContext(
 		ctx,
 		"INSERT INTO credential (id, secret, type) VALUES (?, ?, ?)",
@@ -96,7 +97,7 @@ func (r employeeRepo) Update(ctx context.Context, id string, payload types.Emplo
 	_, err := r.db.ExecContext(
 		ctx,
 		"UPDATE employee SET name = ?, role = ?, updated_at = ? WHERE id = ?",
-		payload.Name, payload.Role, time.Now().UnixMilli(), id,
+		payload.Name, payload.Role, date.FormatToISO(time.Now()), id,
 	)
 
 	return err

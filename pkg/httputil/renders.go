@@ -28,9 +28,9 @@ func Render(w http.ResponseWriter, r *http.Request, statusCode int, templates ..
 
 func RenderError(w http.ResponseWriter, r *http.Request, err error, t func(e errors.ServerError) templ.Component) error {
 	slog.Error("render error", "error", err.Error())
-	if e, ok := err.(errors.ServerError); ok {
+	if e, ok := err.(*errors.ServerError); ok {
 		if e.Errors != nil && t != nil {
-			return Render(w, r, e.StatusCode, t(e))
+			return Render(w, r, e.StatusCode, t(*e))
 		}
 
 		w.WriteHeader(e.StatusCode)
