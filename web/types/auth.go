@@ -3,6 +3,7 @@ package types
 type Credential struct {
 	ID     string `validate:"required"`
 	Secret string `validate:"required"`
+	Type   string `validate:"required"`
 }
 
 type Credentials struct {

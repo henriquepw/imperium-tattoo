@@ -1,0 +1,196 @@
+package pages
+
+import (
+	"fmt"
+	"github.com/henriquepw/imperium-tattoo/web/types"
+	"github.com/henriquepw/imperium-tattoo/web/view/layout"
+	"github.com/henriquepw/imperium-tattoo/web/view/ui"
+)
+
+func getEmployeeStr(e types.Employee) string {
+	return fmt.Sprintf(
+		"employee={id:'%s',name:'%s',role:'%s',email:'%s'}",
+		e.ID, e.Name, e.Role, e.Email,
+	)
+}
+
+templ badge(role string, classname ...string) {
+	<span class={ "text-sm text-accent-12 bg-accent-3 border border-accent-6 px-1 py-0.5 rounded" , classname }>
+		{ role }
+	</span>
+}
+
+templ employeeRow(i types.Employee) {
+	<td class="max-w-10 hidden md:table-cell">
+		@badge(i.Role)
+	</td>
+	<td>
+		<div class="flex flex-col">
+			<div class="space-x-2">
+				@badge(i.Role, "md:hidden")
+				<span>{ i.Name }</span>
+			</div>
+			<span class="text-gray-11 md:hidden">{ i.Email }</span>
+		</div>
+	</td>
+	<td class="hidden md:block">{ i.Email }</td>
+	<td>
+		<div class="flex gap-4 justify-end">
+			<button type="button" @click={ getEmployeeStr(i) }>
+				@ui.Icon("edit", "h-4 text-gray-11")
+			</button>
+			<button
+				hx-delete={ "employees/" + i.ID }
+				hx-swap="outerHTML"
+				hx-target={ "#employee-" + i.ID }
+				hx-indicator={ "#employee-" + i.ID }
+				@click="count=Math.max(0,count-1)"
+			>
+				@ui.Indicator("trash", "h-4 text-error-8")
+			</button>
+		</div>
+	</td>
+}
+
+templ EmployeesPage(boosted bool, items []types.Employee) {
+	@layout.Dashbaord("Funcionários", boosted) {
+		<div x-data={ fmt.Sprintf("{createOpen: false, employee: null, count: %d}", len(items)) }>
+			@layout.PageHeader("Funcionários", []ui.BreadcrumbItem{
+				{Label: "Funcionários", Href: "/employees"},
+			}) {
+				<button class="btn-primary" type="button" @click="createOpen=true">
+					@ui.Icon("plus")
+				</button>
+			}
+			@layout.WithPageLoad() {
+				<section class="w-full card p-0 overflow-hidden">
+					<table class="table-auto w-full">
+						<thead class="bg-gray-2">
+							<tr class="uppercase">
+								<td class="md:hidden">Funcionário</td>
+								<td class="hidden md:table-cell">Cargo</td>
+								<td class="hidden md:table-cell">Nome</td>
+								<td class="hidden md:table-cell">Email</td>
+								<td></td>
+							</tr>
+						</thead>
+						<tbody id="employees">
+							for _, i := range items {
+								<tr id={ "employee-" + i.ID } class="group [&.htmx-request]:hidden">
+									@employeeRow(i)
+								</tr>
+							}
+							<template x-if="count === 0">
+								<tr>
+									<td colspan="4" class="bg-warning-2">
+										<div class="text-center text-warning-12">
+											Nenhum Funcionário cadastrado
+										</div>
+									</td>
+								</tr>
+							</template>
+						</tbody>
+					</table>
+				</section>
+			}
+			@ui.Modal("createOpen", "createOpen=false", "Novo Funcionário") {
+				@EmployeeCreateForm(types.EmployeeCreateDTO{}, nil)
+			}
+			@ui.Modal("!!employee", "employee=null", "Editar Funcionário") {
+				@EmployeeEditForm(nil)
+			}
+		</div>
+	}
+}
+
+templ EmployeeEditForm(errors map[string]string) {
+	<form
+		:hx-put="`employees/${employee?.id}`"
+		x-init="$watch('employee', () => htmx.process($el))"
+		hx-swap="outerHTML"
+		hx-target="this"
+		hx-indicator="this"
+		class="flex flex-col gap-4 group [&.htmx-request]:pointer-events-none"
+		@htmx:before-swap="(e) => {
+      if (e.detail.xhr.status === 200) {
+        employee = null;
+      }
+    }"
+	>
+		@ui.TextInput(ui.TextInputOps{
+			Required:    true,
+			Label:       "Nome",
+			Name:        "name",
+			Placeholder: "Nome do Funcionário",
+			Error:       errors["name"],
+			XValue:      "employee?.name",
+		})
+		@ui.TextInput(ui.TextInputOps{
+			Required:    true,
+			Label:       "Cargo",
+			Name:        "role",
+			Placeholder: "Nome do Funcionário",
+			Error:       errors["role"],
+			XValue:      "employee?.role",
+		})
+		<input class="hidden" name="email" type="email" :value="employee?.email"/>
+		@ui.SubmitBtn("save", "Salvando...", "ml-auto") {
+			Salvar
+		}
+	</form>
+}
+
+templ EmployeeCreateForm(values types.EmployeeCreateDTO, errors map[string]string) {
+	<form
+		hx-post="/employees/create"
+		hx-target="this"
+		hx-swap="outerHTML"
+		hx-indicator="this"
+		class="flex flex-col gap-4 group [&.htmx-request]:pointer-events-none"
+		@htmx:before-swap="(e) => {
+      if (e.detail.xhr.status === 201) {
+        createOpen = false;
+				count++;
+      }
+    }"
+	>
+		@ui.TextInput(ui.TextInputOps{
+			Required:    true,
+			Label:       "Nome",
+			Name:        "name",
+			Placeholder: "Nome do Funcionário",
+			Value:       values.Name,
+			Error:       errors["name"],
+		})
+		@ui.TextInput(ui.TextInputOps{
+			Required:    true,
+			Name:        "email",
+			Label:       "Email",
+			Type:        "email",
+			Placeholder: "exemplo@gmail.com",
+			Value:       values.Email,
+			Error:       errors["email"],
+		})
+		@ui.SubmitBtn("save", "Criando...", "ml-auto") {
+			Criar
+		}
+	</form>
+}
+
+templ OobNewEmployee(e types.Employee) {
+	<template>
+		<tbody hx-swap-oob="beforeend:#employees">
+			<tr id={ "employee-" + e.ID } class="group [&.htmx-request]:hidden">
+				@employeeRow(e)
+			</tr>
+		</tbody>
+	</template>
+}
+
+templ OobEmployeeUpdated(e types.Employee) {
+	<template>
+		<tr id={ "employee-" + e.ID } hx-swap-oob="innerHTML" class="group [&.htmx-request]:hidden">
+			@employeeRow(e)
+		</tr>
+	</template>
+}

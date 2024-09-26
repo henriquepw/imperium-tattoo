@@ -1,0 +1,217 @@
+package pages
+
+import (
+	"fmt"
+	"github.com/henriquepw/imperium-tattoo/web/types"
+	"github.com/henriquepw/imperium-tattoo/web/view/layout"
+	"github.com/henriquepw/imperium-tattoo/web/view/ui"
+)
+
+// func formatDate(dt time.Time) string {
+// return fmt.Sprintf("new Date('%v').toLocaleDateString('pt-BR')", dt)
+// }
+templ clientRow(i types.Client) {
+	<td>
+		{ i.Name }
+	</td>
+	<td>
+		{ i.Email }
+	</td>
+	<td>
+		{ i.Phone }
+	</td>
+}
+
+templ ClientsPage(boosted bool, items []types.Client) {
+	@layout.Dashbaord("Painel", boosted) {
+		<div x-data={ fmt.Sprintf("{createOpen: false, client: null, count: %d}", len(items)) }>
+			@layout.PageHeader("Clientes", []ui.BreadcrumbItem{
+				{Label: "Clientes", Href: "/clients"},
+			}) {
+				<button class="btn-primary" type="button" aria-label="Adicionar Cliente" @click="createOpen=true">
+					@ui.Icon("plus")
+				</button>
+			}
+			@layout.WithPageLoad() {
+				<section class="w-full card p-0 overflow-hidden">
+					<table class="table-auto w-full">
+						<thead class="bg-gray-2">
+							<tr class="uppercase">
+								<td>Cliente</td>
+								<td>Email</td>
+								<td>Whatsapp</td>
+							</tr>
+						</thead>
+						<tbody id="clients">
+							for _, i := range items {
+								<tr id={ "client-" + i.ID } class="group [&.htmx-request]:hidden">
+									@clientRow(i)
+								</tr>
+							}
+							<template x-if="count === 0">
+								<tr>
+									<td colspan="4" class="bg-warning-2">
+										<div class="text-center text-warning-12">
+											Nenhum cliente cadastrado
+										</div>
+									</td>
+								</tr>
+							</template>
+						</tbody>
+					</table>
+				</section>
+			}
+			@ui.Modal("createOpen", "createOpen=false", "Novo Cliente") {
+				@ClientCreateForm(types.ClientCreateDTO{}, nil)
+			}
+		</div>
+	}
+}
+
+templ ClientCreateForm(values types.ClientCreateDTO, errors map[string]string) {
+	<form
+		hx-post="/clients/create"
+		hx-target="this"
+		hx-swap="outerHTML"
+		hx-indicator="this"
+		class="flex flex-col gap-4 group [&.htmx-request]:pointer-events-none"
+		@htmx:before-swap="(e) => {
+      if (e.detail.xhr.status === 201) {
+        createOpen = false;
+				count++;
+      }
+    }"
+	>
+		@ui.TextInput(ui.TextInputOps{
+			Required:    true,
+			Label:       "Nome",
+			Name:        "name",
+			Placeholder: "Nome completo",
+			Value:       values.Name,
+			Error:       errors["name"],
+		})
+		<div class="row">
+			@ui.TextInput(ui.TextInputOps{
+				Required:    true,
+				Label:       "CPF",
+				Name:        "cpf",
+				Placeholder: "000.000.000-00",
+				Mask:        "999.999.999-99",
+				Value:       values.CPF,
+				Error:       errors["name"],
+			})
+			@ui.TextInput(ui.TextInputOps{
+				Required:    true,
+				Label:       "Email",
+				Name:        "email",
+				Placeholder: "exemplo@email.com",
+				Value:       values.Email,
+				Error:       errors["email"],
+			})
+		</div>
+		<div class="row">
+			@ui.TextInput(ui.TextInputOps{
+				Required:    true,
+				Label:       "Whatsapp",
+				Name:        "phone",
+				Placeholder: "(00) 00000-0000",
+				Mask:        "(99) 99999-9999",
+				Value:       values.Phone,
+				Error:       errors["phone"],
+			})
+			@ui.TextInput(ui.TextInputOps{
+				Required: false,
+				Label:    "Instagram",
+				Name:     "instagram",
+				Value:    values.Instagram,
+				Error:    errors["instagram"],
+			})
+		</div>
+		@ui.TextInput(ui.TextInputOps{
+			Required: true,
+			Label:    "Data de Nascimento",
+			Name:     "brithday",
+			Type:     "date",
+			Value:    values.Brithday,
+			Error:    errors["brithday"],
+		})
+		<section class="space-y-4 mt-2">
+			<h2 class="text-xl font-bold -mb-2">Endereço</h2>
+			<div class="row">
+				@ui.TextInput(ui.TextInputOps{
+					Required:    true,
+					Label:       "CEP",
+					Name:        "address.postalCode",
+					Placeholder: "00000-000",
+					Mask:        "99999-999",
+					Value:       values.Address.PostalCode,
+					Error:       errors["address.postalCode"],
+				})
+				@ui.TextInput(ui.TextInputOps{
+					Required:    true,
+					Label:       "Estado",
+					Name:        "address.state",
+					Placeholder: "PB",
+					Mask:        "aa",
+					Value:       values.Address.State,
+					Error:       errors["address.state"],
+				})
+				@ui.TextInput(ui.TextInputOps{
+					Required: true,
+					Label:    "Cidade",
+					Name:     "address.city",
+					Value:    values.Address.City,
+					Error:    errors["address.city"],
+				})
+			</div>
+			<div class="row">
+				@ui.TextInput(ui.TextInputOps{
+					Required: true,
+					Label:    "Rua",
+					Name:     "address.street",
+					Value:    values.Address.Street,
+					Error:    errors["address.street"],
+					Class:    "flex-[7]",
+				})
+				@ui.TextInput(ui.TextInputOps{
+					Required: true,
+					Label:    "Número",
+					Name:     "address.number",
+					Value:    values.Address.Number,
+					Error:    errors["address.number"],
+					Class:    "flex-[3]",
+				})
+			</div>
+			<div class="row">
+				@ui.TextInput(ui.TextInputOps{
+					Required: true,
+					Label:    "Bairro",
+					Name:     "address.district",
+					Value:    values.Address.District,
+					Error:    errors["address.district"],
+				})
+				@ui.TextInput(ui.TextInputOps{
+					Required:  false,
+					Label:     "Complemento",
+					Name:      "address_complement",
+					Value:     values.Address.Complement,
+					Error:     errors["address.complement"],
+					EnterHint: "done",
+				})
+			</div>
+		</section>
+		@ui.SubmitBtn("save", "Salvando...", "ml-auto") {
+			Salvar
+		}
+	</form>
+}
+
+templ OobNewClient(client types.Client) {
+	<template>
+		<tbody hx-swap-oob="beforeend:#clients">
+			<tr id={ "client-" + client.ID } class="group [&.htmx-request]:hidden">
+				@clientRow(client)
+			</tr>
+		</tbody>
+	</template>
+}

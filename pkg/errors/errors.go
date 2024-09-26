@@ -1,4 +1,4 @@
-package web
+package errors
 
 import (
 	"fmt"
@@ -16,42 +16,47 @@ func (s ServerError) Error() string {
 	return fmt.Sprintf("SERVER_ERROR [%v]: %v.\n%v\n--", s.StatusCode, s.Message, s.Errors)
 }
 
-func NotFoundError(message ...string) ServerError {
+func NotFound(message ...string) *ServerError {
 	msg := "Dado não encontrado"
 	if message != nil {
 		msg = strings.Join(message, "")
 	}
 
-	return ServerError{
+	return &ServerError{
 		Message:    msg,
 		StatusCode: http.StatusNotFound,
 	}
 }
 
-func InvalidRequestDataError(errors map[string]string) ServerError {
-	return ServerError{
+func InvalidRequestData(errors map[string]string) *ServerError {
+	return &ServerError{
 		Message:    "Erro de validação",
 		Errors:     errors,
 		StatusCode: http.StatusUnprocessableEntity,
 	}
 }
 
-func InternalError() ServerError {
-	return ServerError{
-		Message:    "Erro Interno",
+func Internal(message ...string) *ServerError {
+	msg := "Erro Interno"
+	if message != nil {
+		msg = strings.Join(message, "")
+	}
+
+	return &ServerError{
+		Message:    msg,
 		StatusCode: http.StatusInternalServerError,
 	}
 }
 
-func InvalidJSONError() ServerError {
-	return ServerError{
+func InvalidData() *ServerError {
+	return &ServerError{
 		Message:    "Dado mal formatado",
 		StatusCode: http.StatusBadRequest,
 	}
 }
 
-func MethodNotAllowedError() ServerError {
-	return ServerError{
+func MethodNotAllowed() *ServerError {
+	return &ServerError{
 		Message:    "Método inválido",
 		StatusCode: http.StatusMethodNotAllowed,
 	}

@@ -1,9 +1,10 @@
-package handler
+package handlers
 
 import (
 	"net/http"
 
-	"github.com/henriquepw/imperium-tattoo/web"
+	"github.com/henriquepw/imperium-tattoo/pkg/httputil"
+	"github.com/henriquepw/imperium-tattoo/pkg/validate"
 	"github.com/henriquepw/imperium-tattoo/web/types"
 	"github.com/henriquepw/imperium-tattoo/web/view/auth"
 )
@@ -25,7 +26,7 @@ func (a AuthHandler) Setup() http.Handler {
 }
 
 func (h AuthHandler) LoginPage(w http.ResponseWriter, r *http.Request) {
-	web.Render(w, r, http.StatusOK, auth.LoginPage())
+	httputil.Render(w, r, http.StatusOK, auth.LoginPage())
 }
 
 func (h AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
@@ -35,22 +36,21 @@ func (h AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		Password: r.Form.Get("password"),
 	}
 
-	if err := web.CheckPayload(payload); err != nil {
-		errors := err.(web.ServerError).Errors
-		if errors == nil {
-			errors = map[string]string{"password": "Email e/ou senha inválidos"}
+	if err := validate.CheckPayload(payload); err != nil {
+		if err.Errors == nil {
+			err.Errors = map[string]string{"password": "Email e/ou senha inválidos"}
 		}
 
-		web.Render(w, r, http.StatusOK, auth.LoginForm(auth.LoginFormData{
+		httputil.Render(w, r, http.StatusOK, auth.LoginForm(auth.LoginFormData{
 			Values: payload,
-			Errors: err.(web.ServerError).Errors,
+			Errors: err.Errors,
 		}))
 		return
 	}
 
 	// TODO: check if user exists, and password match
 	if payload.Username != "Henrique" || payload.Password != "123" {
-		web.Render(w, r, http.StatusOK, auth.LoginForm(auth.LoginFormData{
+		httputil.Render(w, r, http.StatusOK, auth.LoginForm(auth.LoginFormData{
 			Values: payload,
 			Errors: map[string]string{"password": "Email e/ou senha inválidos"},
 		}))

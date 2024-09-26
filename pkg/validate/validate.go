@@ -1,22 +1,23 @@
-package web
+package validate
 
 import (
 	"reflect"
 	"strings"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/henriquepw/imperium-tattoo/pkg/errors"
 )
 
 var validate *validator.Validate
 
-func GetValidate() *validator.Validate {
+func getValidate() *validator.Validate {
 	if validate == nil {
 		validate = validator.New(validator.WithRequiredStructEnabled())
 
-		validate.RegisterAlias("cnpj", "numeric,len=14")
-		validate.RegisterAlias("cpf", "numeric,len=11")
-		validate.RegisterAlias("phone", "numeric,len=11")
+		validate.RegisterAlias("cpf", "len=14")
+		validate.RegisterAlias("phone", "len=15")
 		validate.RegisterAlias("id", "uppercase,alphanum")
+		validate.RegisterAlias("state", "uppercase,len=2")
 
 		validate.RegisterTagNameFunc(func(fld reflect.StructField) string {
 			name := strings.SplitN(fld.Tag.Get("json"), ",", 2)[0]
@@ -42,6 +43,8 @@ func getTagError(tag, param string) string {
 		return "CNPJ inválido"
 	case "date":
 		return "Data inválida"
+	case "state":
+		return "Estado inválido"
 	case "phone":
 		return "Telefone inválido"
 	case "len":
@@ -65,23 +68,22 @@ func getTagError(tag, param string) string {
 	return "Campo inválido"
 }
 
-func CheckPayload[T any](val T) error {
-	v := GetValidate()
+func CheckPayload[T any](val T) *errors.ServerError {
+	v := getValidate()
 	err := v.Struct(val)
-
 	if err == nil {
 		return nil
 	}
 
 	if _, ok := err.(*validator.InvalidValidationError); ok {
-		return err
+		return errors.InvalidData()
 	}
 
-	errors := make(map[string]string)
+	e := make(map[string]string)
 	for _, field := range err.(validator.ValidationErrors) {
 		name := strings.Join(strings.Split(field.Namespace(), ".")[1:], ".")
-		errors[name] = getTagError(field.Tag(), field.Param())
+		e[name] = getTagError(field.Tag(), field.Param())
 	}
 
-	return InvalidRequestDataError(errors)
+	return errors.InvalidRequestData(e)
 }

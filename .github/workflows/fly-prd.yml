@@ -1,19 +1,18 @@
-name: PRD - Fly Deploy
+name: Fly Production Deployment
 on:
   push:
     tags:
       - "*"
 jobs:
   deploy:
-    name: Deploy app
     runs-on: ubuntu-latest
-    concurrency: deploy-group
     steps:
       - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: echo $ENV > .env
-      - run: echo $FLY_PRD > fly.toml
-      - run: flyctl deploy --remote-only
+      - name: Create fly.toml
+        run: echo ${{ secrets.FLY_PRD }} > fly.toml
+      - name: Fly deploy
+        run: flyctl deploy --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-          ENV: ${{ secrets.ENV_PRD }}
