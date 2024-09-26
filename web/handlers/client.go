@@ -65,3 +65,15 @@ func (h *ClientHandler) CreateClientAction(w http.ResponseWriter, r *http.Reques
 		pages.EmployeeCreateForm(types.EmployeeCreateDTO{}, nil),
 	)
 }
+
+func (h *ClientHandler) ClientDetailPage(w http.ResponseWriter, r *http.Request) {
+	client, err := h.svc.GetClientById(r.Context(), r.PathValue("id"))
+	if err != nil {
+		httputil.RenderError(w, r, err, nil)
+		return
+	}
+
+	httputil.RenderPage(w, r, func(b bool) templ.Component {
+		return pages.ClientDetailPage(b, *client)
+	})
+}

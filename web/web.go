@@ -42,6 +42,7 @@ func (s *WebServer) Start() error {
 	clientHandler := handlers.NewClientHandler(clientSVC)
 	server.HandleFunc("GET /clients", clientHandler.ClientsPage)
 	server.HandleFunc("POST /clients/create", clientHandler.CreateClientAction)
+	server.HandleFunc("GET /clients/{id}", clientHandler.ClientDetailPage)
 
 	employeeSvc := services.NewEmployeeService(database.NewEmployeeRepo(s.db))
 	employeeHandler := handlers.NewEmployeeHandler(employeeSvc)

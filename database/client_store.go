@@ -101,11 +101,12 @@ func (s *clientStore) Get(ctx context.Context, id string) (*types.Client, error)
 	row := s.db.QueryRowContext(ctx, query, id)
 	var c types.Client
 
+	var brithday, createdAt, updatedAt string
 	err := row.Scan(
 		&c.ID,
 		&c.Name,
 		&c.CPF,
-		&c.Brithday,
+		&brithday,
 		&c.Instagram,
 		&c.Phone,
 		&c.Email,
@@ -116,9 +117,24 @@ func (s *clientStore) Get(ctx context.Context, id string) (*types.Client, error)
 		&c.Address.Street,
 		&c.Address.Number,
 		&c.Address.Complement,
-		&c.CreatedAt,
-		&c.UpdatedAt,
+		&createdAt,
+		&updatedAt,
 	)
+	if err != nil {
+		return nil, err
+	}
+
+	c.Brithday, err = time.Parse(time.RFC3339, brithday)
+	if err != nil {
+		return nil, err
+	}
+
+	c.CreatedAt, err = time.Parse(time.RFC3339, createdAt)
+	if err != nil {
+		return nil, err
+	}
+
+	c.UpdatedAt, err = time.Parse(time.RFC3339, updatedAt)
 	if err != nil {
 		return nil, err
 	}

@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/henriquepw/imperium-tattoo/database"
@@ -71,6 +72,7 @@ func (s *clientService) CreateClient(ctx context.Context, payload types.ClientCr
 func (s *clientService) GetClientById(ctx context.Context, id string) (*types.Client, *errors.ServerError) {
 	c, err := s.store.Get(ctx, id)
 	if err != nil {
+		log.Println(err)
 		return nil, errors.NotFound("Cliente não encontrado")
 	}
 

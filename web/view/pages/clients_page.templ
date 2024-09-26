@@ -12,7 +12,9 @@ import (
 // }
 templ clientRow(i types.Client) {
 	<td>
-		{ i.Name }
+		<a class="underline text-accent-11" href={ templ.SafeURL("/clients/" + i.ID) }>
+			{ i.Name }
+		</a>
 	</td>
 	<td>
 		{ i.Email }
