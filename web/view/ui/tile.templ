@@ -1,0 +1,33 @@
+package ui
+
+templ Tile(title string, class ...string) {
+	<dl class={ "card flex-1" , class }>
+		<dt class="font-medium text-accent-12">
+			{ title }
+		</dt>
+		<dd class="text-gray-12">
+			{ children... }
+		</dd>
+	</dl>
+}
+
+templ LinkTile(title string, url string, class ...string) {
+	<a
+		target="_blank"
+		rel="noopener noreferrer"
+		href={ templ.SafeURL(url) }
+		class={ "card flex-1 group transition-colors hover-bg-accent-2 hover:border-accent-8" , class, }
+	>
+		<dl>
+			<div class="flex flex-row items-start justify-between">
+				<dt class="font-medium text-accent-12">
+					{ title }
+				</dt>
+				@Icon("external-link", "w-4 h-4 text-gray-10 transition-colors group-hover:text-accent-8")
+			</div>
+			<dd class="text-gray-12">
+				{ children... }
+			</dd>
+		</dl>
+	</a>
+}

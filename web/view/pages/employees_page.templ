@@ -80,15 +80,7 @@ templ EmployeesPage(boosted bool, items []types.Employee) {
 									@employeeRow(i)
 								</tr>
 							}
-							<template x-if="count === 0">
-								<tr>
-									<td colspan="4" class="bg-warning-2">
-										<div class="text-center text-warning-12">
-											Nenhum Funcionário cadastrado
-										</div>
-									</td>
-								</tr>
-							</template>
+							@ui.TEmpty("Nenhum cliente cadastrado")
 						</tbody>
 					</table>
 				</section>
@@ -179,7 +171,7 @@ templ EmployeeCreateForm(values types.EmployeeCreateDTO, errors map[string]strin
 
 templ OobNewEmployee(e types.Employee) {
 	<template>
-		<tbody hx-swap-oob="beforeend:#employees">
+		<tbody hx-swap-oob="beforebegin:#table-end">
 			<tr id={ "employee-" + e.ID } class="group [&.htmx-request]:hidden">
 				@employeeRow(e)
 			</tr>

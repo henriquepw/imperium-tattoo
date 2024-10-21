@@ -34,9 +34,7 @@ templ TextInput(ops TextInputOps) {
 			if ops.XValue !="" {
 				:value={ ops.XValue }
 			}
-			if ops.Required {
-				required
-			}
+			required?={ ops.Required }
 			if ops.EnterHint !="" {
 				enterkeyhint={ ops.EnterHint }
 			} else {

@@ -14,9 +14,10 @@ import (
 )
 
 type ClientService interface {
-	CreateClient(ctx context.Context, paylaod types.ClientCreateDTO) (*types.Client, *errors.ServerError)
-	ListClients(ctx context.Context) ([]types.Client, *errors.ServerError)
-	GetClientById(ctx context.Context, id string) (*types.Client, *errors.ServerError)
+	CreateClient(ctx context.Context, dto types.ClientCreateDTO) (*types.Client, error)
+	ListClients(ctx context.Context) ([]types.Client, error)
+	GetClientById(ctx context.Context, id string) (*types.Client, error)
+	UpdateClinetById(ctx context.Context, id string, dto types.ClientUpdateDTO) error
 }
 
 type clientService struct {
@@ -27,7 +28,7 @@ func NewClientService(store database.ClientStore) *clientService {
 	return &clientService{store}
 }
 
-func (s *clientService) CreateClient(ctx context.Context, payload types.ClientCreateDTO) (*types.Client, *errors.ServerError) {
+func (s *clientService) CreateClient(ctx context.Context, payload types.ClientCreateDTO) (*types.Client, error) {
 	if err := validate.CheckPayload(payload); err != nil {
 		return nil, err
 	}
@@ -69,7 +70,7 @@ func (s *clientService) CreateClient(ctx context.Context, payload types.ClientCr
 	return &client, nil
 }
 
-func (s *clientService) GetClientById(ctx context.Context, id string) (*types.Client, *errors.ServerError) {
+func (s *clientService) GetClientById(ctx context.Context, id string) (*types.Client, error) {
 	c, err := s.store.Get(ctx, id)
 	if err != nil {
 		log.Println(err)
@@ -79,7 +80,7 @@ func (s *clientService) GetClientById(ctx context.Context, id string) (*types.Cl
 	return c, nil
 }
 
-func (s *clientService) ListClients(ctx context.Context) ([]types.Client, *errors.ServerError) {
+func (s *clientService) ListClients(ctx context.Context) ([]types.Client, error) {
 	items, err := s.store.List(ctx)
 	if err != nil {
 		fmt.Println(err)
@@ -87,4 +88,16 @@ func (s *clientService) ListClients(ctx context.Context) ([]types.Client, *error
 	}
 
 	return items, nil
+}
+
+func (s *clientService) UpdateClinetById(ctx context.Context, id string, dto types.ClientUpdateDTO) error {
+	if err := validate.CheckPayload(dto); err != nil {
+		return err
+	}
+
+	if err := s.store.Update(ctx, id, dto); err != nil {
+		return errors.Internal("Não foi possível atualizar os dados do cliente")
+	}
+
+	return nil
 }

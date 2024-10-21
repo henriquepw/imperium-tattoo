@@ -11,6 +11,7 @@ import (
 
 type ClientStore interface {
 	Insert(ctx context.Context, c types.Client) error
+	Update(ctx context.Context, id string, dto types.ClientUpdateDTO) error
 	Get(ctx context.Context, id string) (*types.Client, error)
 	List(ctx context.Context) ([]types.Client, error)
 	ExistCPF(ctx context.Context, cpf string) bool
@@ -208,4 +209,8 @@ func (s *clientStore) List(ctx context.Context) ([]types.Client, error) {
 	}
 
 	return items, nil
+}
+
+func (s *clientStore) Update(ctx context.Context, id string, dto types.ClientUpdateDTO) error {
+	return nil
 }

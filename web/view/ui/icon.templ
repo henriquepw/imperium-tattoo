@@ -1,5 +1,12 @@
 package ui
 
 templ Icon(name string, classname ...string) {
-	<i data-feather={ name } class={ "h-5 w-5" , classname }></i>
+	<i
+		data-feather={ name }
+		if classname==nil {
+			class="h-5 w-5"
+		} else {
+			class={ classname }
+		}
+	></i>
 }

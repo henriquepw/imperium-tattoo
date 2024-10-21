@@ -7,9 +7,6 @@ import (
 	"github.com/henriquepw/imperium-tattoo/web/view/ui"
 )
 
-// func formatDate(dt time.Time) string {
-// return fmt.Sprintf("new Date('%v').toLocaleDateString('pt-BR')", dt)
-// }
 templ clientRow(i types.Client) {
 	<td>
 		<a class="underline text-accent-11" href={ templ.SafeURL("/clients/" + i.ID) }>
@@ -50,15 +47,7 @@ templ ClientsPage(boosted bool, items []types.Client) {
 									@clientRow(i)
 								</tr>
 							}
-							<template x-if="count === 0">
-								<tr>
-									<td colspan="4" class="bg-warning-2">
-										<div class="text-center text-warning-12">
-											Nenhum cliente cadastrado
-										</div>
-									</td>
-								</tr>
-							</template>
+							@ui.TEmpty("Nenhum cliente cadastrado")
 						</tbody>
 					</table>
 				</section>
@@ -208,11 +197,11 @@ templ ClientCreateForm(values types.ClientCreateDTO, errors map[string]string) {
 	</form>
 }
 
-templ OobNewClient(client types.Client) {
+templ OobNewClient(c types.Client) {
 	<template>
-		<tbody hx-swap-oob="beforeend:#clients">
-			<tr id={ "client-" + client.ID } class="group [&.htmx-request]:hidden">
-				@clientRow(client)
+		<tbody hx-swap-oob="beforebegin:#table-ends">
+			<tr id={ "client-" + c.ID } class="group [&.htmx-request]:hidden">
+				@clientRow(c)
 			</tr>
 		</tbody>
 	</template>

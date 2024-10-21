@@ -2,16 +2,6 @@ package types
 
 import "time"
 
-type Address struct {
-	PostalCode string `json:"postalCode" validate:"required"`
-	City       string `json:"city" validate:"required"`
-	State      string `json:"state" validate:"required,state"`
-	District   string `json:"district" validate:"required"`
-	Street     string `json:"street" validate:"required"`
-	Number     string `json:"num" validate:"required"`
-	Complement string `json:"complement"`
-}
-
 type Client struct {
 	Brithday  time.Time `json:"brithday"`
 	CreatedAt time.Time `json:"createdAt"`
@@ -33,4 +23,14 @@ type ClientCreateDTO struct {
 	Phone     string  `json:"phone" validate:"required,phone"`
 	Email     string  `json:"email" validate:"required,email"`
 	Address   Address `json:"address" validate:"required"`
+}
+
+type ClientUpdateDTO struct {
+	Brithday  string  `json:"brithday"`
+	Name      string  `json:"name"`
+	CPF       string  `json:"cpf" validate:"omitempty,cpf"`
+	Instagram string  `json:"instagram"`
+	Phone     string  `json:"phone" validate:"omitempty,phone"`
+	Email     string  `json:"email" validate:"omitempty,email"`
+	Address   Address `json:"address" validate:"omitempty,required"`
 }

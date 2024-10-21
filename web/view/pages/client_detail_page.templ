@@ -1,12 +1,220 @@
 package pages
 
 import (
+	"fmt"
+	"github.com/henriquepw/imperium-tattoo/pkg/date"
 	"github.com/henriquepw/imperium-tattoo/web/types"
 	"github.com/henriquepw/imperium-tattoo/web/view/layout"
+	"github.com/henriquepw/imperium-tattoo/web/view/ui"
+	"time"
+	"unicode"
 )
+
+func formatDate(dt time.Time) string {
+	return fmt.Sprintf("new Date('%v').toLocaleDateString('pt-BR')", dt)
+}
+
+func onlyNumber(str string) string {
+	num := ""
+	for _, c := range str {
+		if unicode.IsDigit(c) {
+			num = num + string(c)
+		}
+	}
+
+	return num
+}
+
+templ ClientDetailSection(client types.Client) {
+	<section class="space-y-4">
+		<div class="row">
+			@ui.Tile("CPF") {
+				{ client.CPF }
+			}
+			@ui.Tile("Data de Nascimento") {
+				<span x-text={ formatDate(client.Brithday) }></span>
+			}
+			@ui.Tile("Email") {
+				{ client.Email }
+			}
+		</div>
+		<div class="row">
+			@ui.LinkTile("Whatsapp", "https://api.whatsapp.com/send?phone="+onlyNumber(client.Phone)) {
+				{ client.Phone }
+			}
+			@ui.LinkTile("Instagram", "https://www.instagram.com/"+client.Instagram) {
+				{ client.Instagram }
+			}
+		</div>
+		<div class="row">
+			@ui.Tile("Endereço") {
+				{ client.Address.ToString() }
+			}
+		</div>
+	</section>
+}
 
 templ ClientDetailPage(boosted bool, client types.Client) {
 	@layout.Dashbaord(client.Name, boosted) {
-		TODO
+		<div x-data="{editOpen:false}">
+			@layout.PageHeader(client.Name, []ui.BreadcrumbItem{
+				{Label: "Clientes", Href: "/clients"},
+				{Label: "Detalhe", Href: "/clients/" + client.ID},
+			}) {
+				<button type="button" class="btn-primary" @click="editOpen = true">
+					@ui.Icon("edit")
+				</button>
+			}
+			@ClientDetailSection(client)
+			<section class="mt-6">
+				<div class="row mb-4">
+					<h2 class="text-2xl flex-1 font-bold">Procedimentos</h2>
+					<button type="button" class="btn-primary">
+						@ui.Icon("plus")
+					</button>
+				</div>
+			</section>
+			@ui.Modal("editOpen", "editOpen=false", "Editar Cliente") {
+				@ClientEditForm(client, nil)
+			}
+		</div>
 	}
+}
+
+templ ClientEditForm(values types.Client, errors map[string]string) {
+	<form
+		hx-put={ "/clients/" + values.ID }
+		hx-target="this"
+		hx-swap="outerHTML"
+		hx-indicator="this"
+		class="flex flex-col gap-4 group [&.htmx-request]:pointer-events-none"
+		@htmx:before-swap="(e) => {
+      if (e.detail.xhr.status === 200) {
+        editOpen = false;
+				count++;
+      }
+    }"
+	>
+		@ui.TextInput(ui.TextInputOps{
+			Required:    true,
+			Label:       "Nome",
+			Name:        "name",
+			Placeholder: "Nome completo",
+			Value:       values.Name,
+			Error:       errors["name"],
+		})
+		<div class="row">
+			@ui.TextInput(ui.TextInputOps{
+				Required:    true,
+				Label:       "CPF",
+				Name:        "cpf",
+				Placeholder: "000.000.000-00",
+				Mask:        "999.999.999-99",
+				Value:       values.CPF,
+				Error:       errors["name"],
+			})
+			@ui.TextInput(ui.TextInputOps{
+				Required:    true,
+				Label:       "Email",
+				Name:        "email",
+				Placeholder: "exemplo@email.com",
+				Value:       values.Email,
+				Error:       errors["email"],
+			})
+		</div>
+		<div class="row">
+			@ui.TextInput(ui.TextInputOps{
+				Required:    true,
+				Label:       "Whatsapp",
+				Name:        "phone",
+				Placeholder: "(00) 00000-0000",
+				Mask:        "(99) 99999-9999",
+				Value:       values.Phone,
+				Error:       errors["phone"],
+			})
+			@ui.TextInput(ui.TextInputOps{
+				Required: false,
+				Label:    "Instagram",
+				Name:     "instagram",
+				Value:    values.Instagram,
+				Error:    errors["instagram"],
+			})
+		</div>
+		@ui.TextInput(ui.TextInputOps{
+			Required: true,
+			Label:    "Data de Nascimento",
+			Name:     "brithday",
+			Type:     "date",
+			Value:    date.FormatToFormInput(values.Brithday),
+			Error:    errors["brithday"],
+		})
+		<section class="space-y-4 mt-2">
+			<h2 class="text-xl font-bold -mb-2">Endereço</h2>
+			<div class="row">
+				@ui.TextInput(ui.TextInputOps{
+					Required:    true,
+					Label:       "CEP",
+					Name:        "address.postalCode",
+					Placeholder: "00000-000",
+					Mask:        "99999-999",
+					Value:       values.Address.PostalCode,
+					Error:       errors["address.postalCode"],
+				})
+				@ui.TextInput(ui.TextInputOps{
+					Required:    true,
+					Label:       "Estado",
+					Name:        "address.state",
+					Placeholder: "PB",
+					Mask:        "aa",
+					Value:       values.Address.State,
+					Error:       errors["address.state"],
+				})
+				@ui.TextInput(ui.TextInputOps{
+					Required: true,
+					Label:    "Cidade",
+					Name:     "address.city",
+					Value:    values.Address.City,
+					Error:    errors["address.city"],
+				})
+			</div>
+			<div class="row">
+				@ui.TextInput(ui.TextInputOps{
+					Required: true,
+					Label:    "Rua",
+					Name:     "address.street",
+					Value:    values.Address.Street,
+					Error:    errors["address.street"],
+					Class:    "flex-[7]",
+				})
+				@ui.TextInput(ui.TextInputOps{
+					Required: true,
+					Label:    "Número",
+					Name:     "address.number",
+					Value:    values.Address.Number,
+					Error:    errors["address.number"],
+					Class:    "flex-[3]",
+				})
+			</div>
+			<div class="row">
+				@ui.TextInput(ui.TextInputOps{
+					Required: true,
+					Label:    "Bairro",
+					Name:     "address.district",
+					Value:    values.Address.District,
+					Error:    errors["address.district"],
+				})
+				@ui.TextInput(ui.TextInputOps{
+					Required:  false,
+					Label:     "Complemento",
+					Name:      "address_complement",
+					Value:     values.Address.Complement,
+					Error:     errors["address.complement"],
+					EnterHint: "done",
+				})
+			</div>
+		</section>
+		@ui.SubmitBtn("save", "Salvando...", "ml-auto") {
+			Salvar
+		}
+	</form>
 }
