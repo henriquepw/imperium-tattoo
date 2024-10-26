@@ -1,9 +1,11 @@
 package ui
 
-templ TEmpty(msg string) {
-	<template id="table-ends" x-if="count === 0">
+import "strconv"
+
+templ TEmpty(msg string, columns int) {
+	<template x-if="count === 0">
 		<tr>
-			<td colspan="4" class="bg-warning-2">
+			<td colspan={ strconv.Itoa(columns) } class="bg-warning-2">
 				<div class="text-center text-warning-12">
 					{ msg }
 				</div>

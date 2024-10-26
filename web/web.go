@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/henriquepw/imperium-tattoo/db"
 	"github.com/henriquepw/imperium-tattoo/pkg/httputil"
+	"github.com/henriquepw/imperium-tattoo/web/db"
 	"github.com/henriquepw/imperium-tattoo/web/handlers"
 	"github.com/henriquepw/imperium-tattoo/web/services"
 	"github.com/henriquepw/imperium-tattoo/web/view/pages"
@@ -45,12 +45,21 @@ func (s *WebServer) Start() error {
 	server.HandleFunc("GET /clients/{id}", clientHandler.ClientDetailPage)
 	server.HandleFunc("PUT /clients/{id}", clientHandler.EditClientAction)
 
-	employeeSvc := services.NewEmployeeService(db.NewEmployeeStore(s.db))
+	employeeStore := db.NewEmployeeStore(s.db)
+	employeeSvc := services.NewEmployeeService(employeeStore)
 	employeeHandler := handlers.NewEmployeeHandler(employeeSvc)
 	server.HandleFunc("GET /employees", employeeHandler.EmployeesPage)
 	server.HandleFunc("POST /employees/create", employeeHandler.EmployeeCreateAction)
 	server.HandleFunc("PUT /employees/{id}", employeeHandler.EmployeeEditAction)
 	server.HandleFunc("DELETE /employees/{id}", employeeHandler.EmployeeDeleteAction)
+
+	procedureStore := db.NewProcedureStore(s.db)
+	procedureSvc := services.NewProcedureService(procedureStore)
+	procedureHandler := handlers.NewProcedureHandler(procedureSvc)
+	server.HandleFunc("GET /procedures", procedureHandler.ProceduresPage)
+	server.HandleFunc("POST /procedures/create", procedureHandler.ProcedureCreateAction)
+	server.HandleFunc("PUT /procedures/{id}", procedureHandler.ProcedureEditAction)
+	server.HandleFunc("DELETE /procedures/{id}", procedureHandler.ProcedureDeleteAction)
 
 	authHandler := handlers.NewAuthHandler()
 	server.HandleFunc("GET /login", authHandler.LoginPage)

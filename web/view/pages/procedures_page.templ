@@ -1,0 +1,151 @@
+package pages
+
+import (
+	"fmt"
+	"github.com/henriquepw/imperium-tattoo/web/types"
+	"github.com/henriquepw/imperium-tattoo/web/view/layout"
+	"github.com/henriquepw/imperium-tattoo/web/view/ui"
+)
+
+func getProcedureStr(p types.Procedure) string {
+	return fmt.Sprintf(
+		"procedure={id:'%s',name:'%s'}",
+		p.ID, p.Name,
+	)
+}
+
+templ procedureRow(p types.Procedure) {
+	<td>
+		{ p.Name }
+	</td>
+	<td>
+		<div class="flex gap-4 justify-end">
+			<button type="button" @click={ getProcedureStr(p) }>
+				@ui.Icon("edit", "h-4 text-gray-11")
+			</button>
+			<button
+				hx-delete={ "procedures/" + p.ID }
+				hx-swap="outerHTML"
+				hx-target={ "#procedure-" + p.ID }
+				hx-indicator={ "#procedure-" + p.ID }
+				@click="count=Math.max(0,count-1)"
+			>
+				@ui.Indicator("trash", "h-4 text-error-8")
+			</button>
+		</div>
+	</td>
+}
+
+templ ProceduresPage(boosted bool, items []types.Procedure) {
+	@layout.Dashbaord("Procedimentos", boosted) {
+		<div x-data={ fmt.Sprintf("{createOpen: false, procedure: null, count: %d}", len(items)) }>
+			@layout.PageHeader("Procedimentos", []ui.BreadcrumbItem{
+				{Label: "Procedimentos", Href: "/procedures"},
+			}) {
+				<button class="btn-primary" type="button" @click="createOpen=true">
+					@ui.Icon("plus")
+				</button>
+			}
+			@layout.WithPageLoad() {
+				<section class="w-full card p-0 overflow-hidden">
+					<table class="table-auto w-full">
+						<thead class="bg-gray-2">
+							<tr>
+								<td class="w-full">Procimento</td>
+								<td></td>
+							</tr>
+						</thead>
+						<tbody id="procedures">
+							@ui.TEmpty("Nenhum procedimento cadastrado", 2)
+							for _, p := range items {
+								<tr id={ "procedure-" + p.ID } class="group [&.htmx-request]:hidden">
+									@procedureRow(p)
+								</tr>
+							}
+						</tbody>
+					</table>
+				</section>
+			}
+			@ui.Modal("createOpen", "createOpen=false", "Novo Procedimento") {
+				@ProcedureCreateForm("", nil)
+			}
+			@ui.Modal("!!procedure", "procedure=null", "Editar Procedimento") {
+				@ProcedureEditForm(nil)
+			}
+		</div>
+	}
+}
+
+templ ProcedureEditForm(errors map[string]string) {
+	<form
+		:hx-put="`procedures/${procedure?.id}`"
+		x-init="$watch('procedure', () => htmx.process($el))"
+		hx-swap="outerHTML"
+		hx-target="this"
+		hx-indicator="this"
+		class="flex flex-col gap-4 group [&.htmx-request]:pointer-events-none"
+		@htmx:before-swap="(e) => {
+      if (e.detail.xhr.status === 200) {
+        procedure = null;
+      }
+    }"
+	>
+		@ui.TextInput(ui.TextInputOps{
+			Required:    true,
+			Label:       "Nome",
+			Name:        "name",
+			Placeholder: "Procedimento",
+			Error:       errors["name"],
+			XValue:      "procedure?.name",
+		})
+		@ui.SubmitBtn("save", "Salvando...", "ml-auto") {
+			Salvar
+		}
+	</form>
+}
+
+templ ProcedureCreateForm(name string, errors map[string]string) {
+	<form
+		hx-post="/procedures/create"
+		hx-target="this"
+		hx-swap="outerHTML"
+		hx-indicator="this"
+		class="flex flex-col gap-4 group [&.htmx-request]:pointer-events-none"
+		@htmx:before-swap="(e) => {
+      if (e.detail.xhr.status === 201) {
+        createOpen = false;
+				count++;
+      }
+    }"
+	>
+		@ui.TextInput(ui.TextInputOps{
+			Required:    true,
+			Label:       "Nome",
+			Name:        "name",
+			Placeholder: "Nome do Funcionário",
+			Value:       name,
+			Error:       errors["name"],
+		})
+		@ui.SubmitBtn("save", "Criando...", "ml-auto") {
+			Criar
+		}
+	</form>
+}
+
+templ OobNewProcedure(p types.Procedure) {
+	<template>
+		<tbody hx-swap-oob="beforeend:#procedures">
+			<tr id={ "procedure-" + p.ID } class="group [&.htmx-request]:hidden">
+				@procedureRow(p)
+			</tr>
+		</tbody>
+	</template>
+}
+
+templ OobProcedureUpdated(p types.Procedure) {
+	<template>
+		<tr id={ "procedure-" + p.ID } hx-swap-oob="innerHTML" class="group [&.htmx-request]:hidden">
+			@procedureRow(p)
+		</tr>
+	</template>
+}

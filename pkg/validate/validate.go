@@ -87,3 +87,23 @@ func CheckPayload[T any](val T) *errors.ServerError {
 
 	return errors.InvalidRequestData(e)
 }
+
+func CheckField(val interface{}, tags string) *errors.ServerError {
+	v := getValidate()
+	err := v.Var(val, tags)
+	if err == nil {
+		return nil
+	}
+
+	if _, ok := err.(*validator.InvalidValidationError); ok {
+		return errors.InvalidData()
+	}
+
+	e := make(map[string]string)
+	for _, field := range err.(validator.ValidationErrors) {
+		name := strings.Join(strings.Split(field.Namespace(), ".")[1:], ".")
+		e[name] = getTagError(field.Tag(), field.Param())
+	}
+
+	return errors.InvalidRequestData(e)
+}

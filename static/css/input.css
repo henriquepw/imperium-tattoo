@@ -31,7 +31,7 @@
   }
 
   thead td {
-    @apply bg-gray-3 border-b border-gray-6 font-bold text-sm;
+    @apply bg-gray-3 border-b border-gray-6 font-bold text-sm uppercase;
   }
 
   tr+tr td {

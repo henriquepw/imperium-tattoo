@@ -35,19 +35,19 @@ templ ClientsPage(boosted bool, items []types.Client) {
 				<section class="w-full card p-0 overflow-hidden">
 					<table class="table-auto w-full">
 						<thead class="bg-gray-2">
-							<tr class="uppercase">
+							<tr>
 								<td>Cliente</td>
 								<td>Email</td>
 								<td>Whatsapp</td>
 							</tr>
 						</thead>
 						<tbody id="clients">
+							@ui.TEmpty("Nenhum cliente cadastrado", 3)
 							for _, i := range items {
 								<tr id={ "client-" + i.ID } class="group [&.htmx-request]:hidden">
 									@clientRow(i)
 								</tr>
 							}
-							@ui.TEmpty("Nenhum cliente cadastrado")
 						</tbody>
 					</table>
 				</section>
@@ -199,7 +199,7 @@ templ ClientCreateForm(values types.ClientCreateDTO, errors map[string]string) {
 
 templ OobNewClient(c types.Client) {
 	<template>
-		<tbody hx-swap-oob="beforebegin:#table-ends">
+		<tbody hx-swap-oob="beforeend:#clients">
 			<tr id={ "client-" + c.ID } class="group [&.htmx-request]:hidden">
 				@clientRow(c)
 			</tr>

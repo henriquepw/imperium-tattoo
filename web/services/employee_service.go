@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/henriquepw/imperium-tattoo/db"
+	"github.com/henriquepw/imperium-tattoo/web/db"
 	"github.com/henriquepw/imperium-tattoo/pkg/errors"
 	"github.com/henriquepw/imperium-tattoo/pkg/hash"
 	"github.com/henriquepw/imperium-tattoo/pkg/validate"

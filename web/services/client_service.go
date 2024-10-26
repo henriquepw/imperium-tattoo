@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/henriquepw/imperium-tattoo/db"
+	"github.com/henriquepw/imperium-tattoo/web/db"
 	"github.com/henriquepw/imperium-tattoo/pkg/customid"
 	"github.com/henriquepw/imperium-tattoo/pkg/errors"
 	"github.com/henriquepw/imperium-tattoo/pkg/hash"
