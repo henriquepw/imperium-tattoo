@@ -7,12 +7,12 @@
 - [X] Delete Employee
 - [X] Register Clients
 - [X] List Clients
-- [-] Edit Clients
-- [ ] Global Error Handle
+- [X] Edit Clients
 - [ ] Add Client Process
 - [ ] Add Client Process
 - [ ] Show Client Process
 - [ ] Authentication
+- [ ] Global Error Handle
 - [ ] Logout
 - [ ] Profile
 - [ ] Config esbuild

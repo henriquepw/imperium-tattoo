@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/henriquepw/imperium-tattoo/database"
+	"github.com/henriquepw/imperium-tattoo/db"
 	"github.com/henriquepw/imperium-tattoo/pkg/httputil"
 	"github.com/henriquepw/imperium-tattoo/web/handlers"
 	"github.com/henriquepw/imperium-tattoo/web/services"
@@ -37,7 +37,7 @@ func (s *WebServer) Start() error {
 	homeHandler := handlers.NewHomeHandler()
 	server.HandleFunc("/dashboard", homeHandler.HomePage)
 
-	clientStore := database.NewClientStore(s.db)
+	clientStore := db.NewClientStore(s.db)
 	clientSVC := services.NewClientService(clientStore)
 	clientHandler := handlers.NewClientHandler(clientSVC)
 	server.HandleFunc("GET /clients", clientHandler.ClientsPage)
@@ -45,7 +45,7 @@ func (s *WebServer) Start() error {
 	server.HandleFunc("GET /clients/{id}", clientHandler.ClientDetailPage)
 	server.HandleFunc("PUT /clients/{id}", clientHandler.EditClientAction)
 
-	employeeSvc := services.NewEmployeeService(database.NewEmployeeRepo(s.db))
+	employeeSvc := services.NewEmployeeService(db.NewEmployeeStore(s.db))
 	employeeHandler := handlers.NewEmployeeHandler(employeeSvc)
 	server.HandleFunc("GET /employees", employeeHandler.EmployeesPage)
 	server.HandleFunc("POST /employees/create", employeeHandler.EmployeeCreateAction)

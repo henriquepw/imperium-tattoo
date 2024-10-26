@@ -26,11 +26,10 @@ type ClientCreateDTO struct {
 }
 
 type ClientUpdateDTO struct {
-	Brithday  string  `json:"brithday"`
-	Name      string  `json:"name"`
-	CPF       string  `json:"cpf" validate:"omitempty,cpf"`
-	Instagram string  `json:"instagram"`
-	Phone     string  `json:"phone" validate:"omitempty,phone"`
-	Email     string  `json:"email" validate:"omitempty,email"`
-	Address   Address `json:"address" validate:"omitempty,required"`
+	Brithday  time.Time `json:"brithday"`
+	Name      string    `json:"name"`
+	CPF       string    `json:"cpf" validate:"omitempty,cpf"`
+	Instagram string    `json:"instagram"`
+	Phone     string    `json:"phone" validate:"omitempty,phone"`
+	Address   Address   `json:"address" validate:"omitempty,required"`
 }

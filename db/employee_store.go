@@ -1,4 +1,4 @@
-package database
+package db
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 	"github.com/henriquepw/imperium-tattoo/web/types"
 )
 
-type EmployeeRepo interface {
+type EmployeeStore interface {
 	Insert(ctx context.Context, payload types.EmployeeCreateDTO) (*string, error)
 	Update(ctx context.Context, id string, payload types.EmployeeUpdateDTO) error
 	List(ctx context.Context) ([]types.Employee, error)
@@ -20,21 +20,21 @@ type EmployeeRepo interface {
 	HasEmail(ctx context.Context, email string) bool
 }
 
-type employeeRepo struct {
+type employeeStore struct {
 	db *sql.DB
 }
 
-func NewEmployeeRepo(db *sql.DB) *employeeRepo {
-	return &employeeRepo{db}
+func NewEmployeeStore(db *sql.DB) *employeeStore {
+	return &employeeStore{db}
 }
 
-func (r employeeRepo) Insert(ctx context.Context, payload types.EmployeeCreateDTO) (*string, error) {
+func (s employeeStore) Insert(ctx context.Context, payload types.EmployeeCreateDTO) (*string, error) {
 	id, err := customid.New()
 	if err != nil {
 		return nil, err
 	}
 
-	tx, err := r.db.BeginTx(ctx, nil)
+	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -65,16 +65,16 @@ func (r employeeRepo) Insert(ctx context.Context, payload types.EmployeeCreateDT
 	return &id, nil
 }
 
-func (r employeeRepo) Get(ctx context.Context, id string) (types.Employee, error) {
+func (s employeeStore) Get(ctx context.Context, id string) (types.Employee, error) {
 	var e types.Employee
-	row := r.db.QueryRowContext(ctx, "SELECT id, name, email, role FROM employee WHERE id = ?", id)
+	row := s.db.QueryRowContext(ctx, "SELECT id, name, email, role FROM employee WHERE id = ?", id)
 	err := row.Scan(&e.ID, &e.Name, &e.Email, &e.Role)
 
 	return e, err
 }
 
-func (r employeeRepo) List(ctx context.Context) ([]types.Employee, error) {
-	rows, err := r.db.QueryContext(ctx, "SELECT id, name, email, role FROM employee")
+func (s employeeStore) List(ctx context.Context) ([]types.Employee, error) {
+	rows, err := s.db.QueryContext(ctx, "SELECT id, name, email, role FROM employee")
 	if err != nil {
 		return nil, err
 	}
@@ -93,8 +93,8 @@ func (r employeeRepo) List(ctx context.Context) ([]types.Employee, error) {
 	return items, nil
 }
 
-func (r employeeRepo) Update(ctx context.Context, id string, payload types.EmployeeUpdateDTO) error {
-	_, err := r.db.ExecContext(
+func (s employeeStore) Update(ctx context.Context, id string, payload types.EmployeeUpdateDTO) error {
+	_, err := s.db.ExecContext(
 		ctx,
 		"UPDATE employee SET name = ?, role = ?, updated_at = ? WHERE id = ?",
 		payload.Name, payload.Role, date.FormatToISO(time.Now()), id,
@@ -103,13 +103,13 @@ func (r employeeRepo) Update(ctx context.Context, id string, payload types.Emplo
 	return err
 }
 
-func (r employeeRepo) Delete(ctx context.Context, email string) error {
-	_, err := r.db.ExecContext(ctx, "DELETE FROM credential WHERE id = ?", email)
+func (s employeeStore) Delete(ctx context.Context, email string) error {
+	_, err := s.db.ExecContext(ctx, "DELETE FROM credential WHERE id = ?", email)
 	return err
 }
 
-func (r employeeRepo) Exists(ctx context.Context, id string) bool {
-	rows, err := r.db.QueryContext(ctx, "SELECT id FROM employee WHERE id = ?", id)
+func (s employeeStore) Exists(ctx context.Context, id string) bool {
+	rows, err := s.db.QueryContext(ctx, "SELECT id FROM employee WHERE id = ?", id)
 	if err != nil {
 		return false
 	}
@@ -117,8 +117,8 @@ func (r employeeRepo) Exists(ctx context.Context, id string) bool {
 	return rows.Next()
 }
 
-func (r employeeRepo) HasEmail(ctx context.Context, email string) bool {
-	rows, err := r.db.QueryContext(ctx, "SELECT id FROM employee WHERE email = ?", email)
+func (s employeeStore) HasEmail(ctx context.Context, email string) bool {
+	rows, err := s.db.QueryContext(ctx, "SELECT id FROM employee WHERE email = ?", email)
 	if err != nil {
 		return false
 	}

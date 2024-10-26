@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/a-h/templ"
+	"github.com/henriquepw/imperium-tattoo/pkg/date"
 	"github.com/henriquepw/imperium-tattoo/pkg/errors"
 	"github.com/henriquepw/imperium-tattoo/pkg/httputil"
 	"github.com/henriquepw/imperium-tattoo/web/services"
@@ -81,10 +82,16 @@ func (h *ClientHandler) ClientDetailPage(w http.ResponseWriter, r *http.Request)
 
 func (h *ClientHandler) EditClientAction(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
+	brithday, err := date.ParseInput(r.Form.Get("brithday"))
+	if err != nil {
+		httputil.RenderError(w, r, err, nil)
+		return
+	}
+
+	id := r.PathValue("id")
 	payload := types.ClientUpdateDTO{
 		Name:      r.Form.Get("name"),
-		Email:     r.Form.Get("email"),
-		Brithday:  r.Form.Get("brithday"),
+		Brithday:  brithday,
 		CPF:       r.Form.Get("cpf"),
 		Instagram: r.Form.Get("instagram"),
 		Phone:     r.Form.Get("phone"),
@@ -99,17 +106,17 @@ func (h *ClientHandler) EditClientAction(w http.ResponseWriter, r *http.Request)
 		},
 	}
 
-	err := h.svc.UpdateClinetById(r.Context(), r.PathValue("id"), payload)
+	client, err := h.svc.UpdateClinetById(r.Context(), id, payload)
 	if err != nil {
 		httputil.RenderError(w, r, err, func(e errors.ServerError) templ.Component {
-			return pages.EmployeeEditForm(e.Errors)
+			return pages.ClientEditForm(id, payload, e.Errors)
 		})
 		return
 	}
 
 	httputil.Render(
-		w, r, http.StatusCreated,
-		pages.EmployeeEditForm(nil),
-		// TODO: oob update
+		w, r, http.StatusOK,
+		pages.ClientEditForm(id, payload, nil),
+		pages.OobClientUpdated(*client),
 	)
 }

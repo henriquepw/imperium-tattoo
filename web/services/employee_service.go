@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/henriquepw/imperium-tattoo/database"
+	"github.com/henriquepw/imperium-tattoo/db"
 	"github.com/henriquepw/imperium-tattoo/pkg/errors"
 	"github.com/henriquepw/imperium-tattoo/pkg/hash"
 	"github.com/henriquepw/imperium-tattoo/pkg/validate"
@@ -20,10 +20,10 @@ type EmployeeService interface {
 }
 
 type EmployeeSvc struct {
-	repo database.EmployeeRepo
+	repo db.EmployeeStore
 }
 
-func NewEmployeeService(repo database.EmployeeRepo) *EmployeeSvc {
+func NewEmployeeService(repo db.EmployeeStore) *EmployeeSvc {
 	return &EmployeeSvc{repo}
 }
 

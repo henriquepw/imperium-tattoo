@@ -1,4 +1,4 @@
-package database
+package db
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 )
 
 type ClientStore interface {
-	Insert(ctx context.Context, c types.Client) error
+	Insert(ctx context.Context, c types.Client, password string) error
 	Update(ctx context.Context, id string, dto types.ClientUpdateDTO) error
 	Get(ctx context.Context, id string) (*types.Client, error)
 	List(ctx context.Context) ([]types.Client, error)
@@ -25,7 +25,7 @@ func NewClientStore(db *sql.DB) *clientStore {
 	return &clientStore{db}
 }
 
-func (s *clientStore) Insert(ctx context.Context, c types.Client) error {
+func (s *clientStore) Insert(ctx context.Context, c types.Client, password string) error {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
@@ -35,7 +35,7 @@ func (s *clientStore) Insert(ctx context.Context, c types.Client) error {
 	_, err = tx.ExecContext(
 		ctx,
 		"INSERT INTO credential (id, secret, type) VALUES (?, ?, ?)",
-		c.CPF, c.CPF, "CLIENT",
+		c.Email, password, "CLIENT",
 	)
 	if err != nil {
 		return err
@@ -212,5 +212,43 @@ func (s *clientStore) List(ctx context.Context) ([]types.Client, error) {
 }
 
 func (s *clientStore) Update(ctx context.Context, id string, dto types.ClientUpdateDTO) error {
-	return nil
+	query := `
+    UPDATE client
+    SET
+      name = ?,
+      cpf = ? ,
+      brithday = ?,
+      instagram = ?,
+      phone = ?,
+      address_postal_code = ?,
+      address_state = ?,
+      address_city = ?,
+      address_district = ?,
+      address_street = ?,
+      address_number = ?,
+      address_complement = ?,
+      updated_at = ?
+    WHERE id = ?
+  `
+
+	_, err := s.db.ExecContext(
+		ctx,
+		query,
+		dto.Name,
+		dto.CPF,
+		date.FormatToISO(dto.Brithday),
+		dto.Instagram,
+		dto.Phone,
+		dto.Address.PostalCode,
+		dto.Address.State,
+		dto.Address.City,
+		dto.Address.District,
+		dto.Address.Street,
+		dto.Address.Number,
+		dto.Address.Complement,
+		date.FormatToISO(time.Now()),
+		id,
+	)
+
+	return err
 }

@@ -26,32 +26,38 @@ func onlyNumber(str string) string {
 }
 
 templ ClientDetailSection(client types.Client) {
-	<section class="space-y-4">
-		<div class="row">
-			@ui.Tile("CPF") {
-				{ client.CPF }
-			}
-			@ui.Tile("Data de Nascimento") {
-				<span x-text={ formatDate(client.Brithday) }></span>
-			}
-			@ui.Tile("Email") {
-				{ client.Email }
-			}
-		</div>
-		<div class="row">
-			@ui.LinkTile("Whatsapp", "https://api.whatsapp.com/send?phone="+onlyNumber(client.Phone)) {
-				{ client.Phone }
-			}
-			@ui.LinkTile("Instagram", "https://www.instagram.com/"+client.Instagram) {
-				{ client.Instagram }
-			}
-		</div>
-		<div class="row">
-			@ui.Tile("Endereço") {
-				{ client.Address.ToString() }
-			}
-		</div>
-	</section>
+	<di class="row">
+		@ui.Tile("Adicionado em") {
+			<span x-text={ formatDate(client.CreatedAt) }></span>
+		}
+		@ui.Tile("Última atualização em") {
+			<span x-text={ formatDate(client.UpdatedAt) }></span>
+		}
+	</di>
+	<div class="row">
+		@ui.Tile("CPF") {
+			{ client.CPF }
+		}
+		@ui.Tile("Data de Nascimento") {
+			<span x-text={ formatDate(client.Brithday) }></span>
+		}
+		@ui.Tile("Email") {
+			{ client.Email }
+		}
+	</div>
+	<div class="row">
+		@ui.LinkTile("Whatsapp", "https://api.whatsapp.com/send?phone="+onlyNumber(client.Phone)) {
+			{ client.Phone }
+		}
+		@ui.LinkTile("Instagram", "https://www.instagram.com/"+client.Instagram) {
+			{ client.Instagram }
+		}
+	</div>
+	<div class="row">
+		@ui.Tile("Endereço") {
+			{ client.Address.ToString() }
+		}
+	</div>
 }
 
 templ ClientDetailPage(boosted bool, client types.Client) {
@@ -65,7 +71,9 @@ templ ClientDetailPage(boosted bool, client types.Client) {
 					@ui.Icon("edit")
 				</button>
 			}
-			@ClientDetailSection(client)
+			<section id="client-section" class="space-y-4">
+				@ClientDetailSection(client)
+			</section>
 			<section class="mt-6">
 				<div class="row mb-4">
 					<h2 class="text-2xl flex-1 font-bold">Procedimentos</h2>
@@ -75,15 +83,22 @@ templ ClientDetailPage(boosted bool, client types.Client) {
 				</div>
 			</section>
 			@ui.Modal("editOpen", "editOpen=false", "Editar Cliente") {
-				@ClientEditForm(client, nil)
+				@ClientEditForm(client.ID, types.ClientUpdateDTO{
+					Name:      client.Name,
+					Brithday:  client.Brithday,
+					CPF:       client.CPF,
+					Instagram: client.Instagram,
+					Phone:     client.Phone,
+					Address:   client.Address,
+				}, nil)
 			}
 		</div>
 	}
 }
 
-templ ClientEditForm(values types.Client, errors map[string]string) {
+templ ClientEditForm(id string, values types.ClientUpdateDTO, errors map[string]string) {
 	<form
-		hx-put={ "/clients/" + values.ID }
+		hx-put={ "/clients/" + id }
 		hx-target="this"
 		hx-swap="outerHTML"
 		hx-indicator="this"
@@ -112,14 +127,6 @@ templ ClientEditForm(values types.Client, errors map[string]string) {
 				Mask:        "999.999.999-99",
 				Value:       values.CPF,
 				Error:       errors["name"],
-			})
-			@ui.TextInput(ui.TextInputOps{
-				Required:    true,
-				Label:       "Email",
-				Name:        "email",
-				Placeholder: "exemplo@email.com",
-				Value:       values.Email,
-				Error:       errors["email"],
 			})
 		</div>
 		<div class="row">
@@ -217,4 +224,10 @@ templ ClientEditForm(values types.Client, errors map[string]string) {
 			Salvar
 		}
 	</form>
+}
+
+templ OobClientUpdated(c types.Client) {
+	<section id="client-section" class="space-y-4" hx-swap-oob="outerHTML">
+		@ClientDetailSection(c)
+	</section>
 }
