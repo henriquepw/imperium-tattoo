@@ -18,8 +18,11 @@ templ Modal(show, close, title string) {
 			x-transition:leave-start="opacity-100 translate-y-0"
 			x-transition:leave-end="opacity-0 translate-y-full"
 			class="
+       flex flex-col
        z-50 bg-gray-2 p-4 min-h-[75%] w-full mt-auto rounded-t-2xl transition
        ease-out shadow border-t border-x
+       md:m-auto md:border md:rounded-2xl md:w-2/3 md:max-w-screen-lg md:min-h-0 md:h-auto
+       max-h-[calc(100%-2rem)] overflow-hidden relative
       "
 		>
 			<div class="flex items-center justify-between border-b pb-2 mb-4">
@@ -30,7 +33,9 @@ templ Modal(show, close, title string) {
 					@Icon("x", "w-5 h-5 text-gray-11")
 				</button>
 			</div>
-			{ children... }
+			<div class="pr-2 -mr-2 pb-8 md:pb-0 overflow-x-hidden overflow-y-auto">
+				{ children... }
+			</div>
 		</div>
 	</div>
 }
