@@ -13,3 +13,11 @@ templ TEmpty(msg string, columns int) {
 		</tr>
 	</template>
 }
+
+templ Table(className ...string) {
+	<div class={ "card p-0 overflow-auto min-w-full w-0",className }>
+		<table class="table-auto w-full">
+			{ children... }
+		</table>
+	</div>
+}

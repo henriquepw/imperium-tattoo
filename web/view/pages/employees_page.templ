@@ -63,27 +63,25 @@ templ EmployeesPage(boosted bool, items []types.Employee) {
 				</button>
 			}
 			@layout.WithPageLoad() {
-				<section class="w-full card p-0 overflow-hidden">
-					<table class="table-auto w-full">
-						<thead class="bg-gray-2">
-							<tr>
-								<td class="md:hidden">Funcionário</td>
-								<td class="hidden md:table-cell">Cargo</td>
-								<td class="hidden md:table-cell">Nome</td>
-								<td class="hidden md:table-cell">Email</td>
-								<td></td>
+				@ui.Table() {
+					<thead class="bg-gray-2">
+						<tr>
+							<td class="md:hidden">Funcionário</td>
+							<td class="hidden md:table-cell">Cargo</td>
+							<td class="hidden md:table-cell">Nome</td>
+							<td class="hidden md:table-cell">Email</td>
+							<td></td>
+						</tr>
+					</thead>
+					<tbody id="employees">
+						@ui.TEmpty("Nenhum cliente cadastrado", 4)
+						for _, i := range items {
+							<tr id={ "employee-" + i.ID } class="group [&.htmx-request]:hidden">
+								@employeeRow(i)
 							</tr>
-						</thead>
-						<tbody id="employees">
-							@ui.TEmpty("Nenhum cliente cadastrado", 4)
-							for _, i := range items {
-								<tr id={ "employee-" + i.ID } class="group [&.htmx-request]:hidden">
-									@employeeRow(i)
-								</tr>
-							}
-						</tbody>
-					</table>
-				</section>
+						}
+					</tbody>
+				}
 			}
 			@ui.Modal("createOpen", "createOpen=false", "Novo Funcionário") {
 				@EmployeeCreateForm(types.EmployeeCreateDTO{}, nil)

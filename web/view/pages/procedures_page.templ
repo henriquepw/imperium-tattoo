@@ -47,24 +47,22 @@ templ ProceduresPage(boosted bool, items []types.Procedure) {
 				</button>
 			}
 			@layout.WithPageLoad() {
-				<section class="w-full card p-0 overflow-hidden">
-					<table class="table-auto w-full">
-						<thead class="bg-gray-2">
-							<tr>
-								<td class="w-full">Procimento</td>
-								<td></td>
+				@ui.Table() {
+					<thead class="bg-gray-2">
+						<tr>
+							<td class="w-full">Procedimento</td>
+							<td></td>
+						</tr>
+					</thead>
+					<tbody id="procedures">
+						@ui.TEmpty("Nenhum procedimento cadastrado", 2)
+						for _, p := range items {
+							<tr id={ "procedure-" + p.ID } class="group [&.htmx-request]:hidden">
+								@procedureRow(p)
 							</tr>
-						</thead>
-						<tbody id="procedures">
-							@ui.TEmpty("Nenhum procedimento cadastrado", 2)
-							for _, p := range items {
-								<tr id={ "procedure-" + p.ID } class="group [&.htmx-request]:hidden">
-									@procedureRow(p)
-								</tr>
-							}
-						</tbody>
-					</table>
-				</section>
+						}
+					</tbody>
+				}
 			}
 			@ui.Modal("createOpen", "createOpen=false", "Novo Procedimento") {
 				@ProcedureCreateForm("", nil)

@@ -16,14 +16,14 @@ templ clientRow(i types.Client) {
 	<td>
 		{ i.Email }
 	</td>
-	<td>
+	<td class="whitespace-nowrap">
 		{ i.Phone }
 	</td>
 }
 
 templ ClientsPage(boosted bool, items []types.Client) {
 	@layout.Dashbaord("Painel", boosted) {
-		<div x-data={ fmt.Sprintf("{createOpen: false, client: null, count: %d}", len(items)) }>
+		<div x-data={ fmt.Sprintf("{createOpen: true, client: null, count: %d}", len(items)) }>
 			@layout.PageHeader("Clientes", []ui.BreadcrumbItem{
 				{Label: "Clientes", Href: "/clients"},
 			}) {
@@ -32,25 +32,23 @@ templ ClientsPage(boosted bool, items []types.Client) {
 				</button>
 			}
 			@layout.WithPageLoad() {
-				<section class="w-full card p-0 overflow-hidden">
-					<table class="table-auto w-full">
-						<thead class="bg-gray-2">
-							<tr>
-								<td>Cliente</td>
-								<td>Email</td>
-								<td>Whatsapp</td>
+				@ui.Table() {
+					<thead class="bg-gray-2">
+						<tr>
+							<td>Cliente</td>
+							<td>Email</td>
+							<td>Whatsapp</td>
+						</tr>
+					</thead>
+					<tbody id="clients">
+						@ui.TEmpty("Nenhum cliente cadastrado", 3)
+						for _, i := range items {
+							<tr id={ "client-" + i.ID } class="group [&.htmx-request]:hidden">
+								@clientRow(i)
 							</tr>
-						</thead>
-						<tbody id="clients">
-							@ui.TEmpty("Nenhum cliente cadastrado", 3)
-							for _, i := range items {
-								<tr id={ "client-" + i.ID } class="group [&.htmx-request]:hidden">
-									@clientRow(i)
-								</tr>
-							}
-						</tbody>
-					</table>
-				</section>
+						}
+					</tbody>
+				}
 			}
 			@ui.Modal("createOpen", "createOpen=false", "Novo Cliente") {
 				@ClientCreateForm(types.ClientCreateDTO{}, nil)
