@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/a-h/templ"
@@ -13,15 +14,17 @@ import (
 )
 
 type ClientHandler struct {
-	svc services.ClientService
+	clientSVC          services.ClientService
+	procedureSVC       services.ProcedureService
+	clientProcedureSVC services.ClientProcedureService
 }
 
-func NewClientHandler(svc services.ClientService) *ClientHandler {
-	return &ClientHandler{svc}
+func NewClientHandler(client services.ClientService, procedure services.ProcedureService, clientProcedure services.ClientProcedureService) *ClientHandler {
+	return &ClientHandler{client, procedure, clientProcedure}
 }
 
 func (h *ClientHandler) ClientsPage(w http.ResponseWriter, r *http.Request) {
-	clients, err := h.svc.ListClients(r.Context())
+	clients, err := h.clientSVC.ListClients(r.Context())
 	if err != nil {
 		httputil.RenderError(w, r, err, func(e errors.ServerError) templ.Component {
 			return pages.ClientsPage(r.Header.Get("HX-Boosted") == "true", nil)
@@ -53,7 +56,7 @@ func (h *ClientHandler) CreateClientAction(w http.ResponseWriter, r *http.Reques
 		},
 	}
 
-	client, err := h.svc.CreateClient(r.Context(), payload)
+	client, err := h.clientSVC.CreateClient(r.Context(), payload)
 	if err != nil {
 		httputil.RenderError(w, r, err, func(e errors.ServerError) templ.Component {
 			return pages.ClientCreateForm(payload, e.Errors)
@@ -63,20 +66,26 @@ func (h *ClientHandler) CreateClientAction(w http.ResponseWriter, r *http.Reques
 
 	httputil.Render(
 		w, r, http.StatusCreated,
-		pages.EmployeeCreateForm(types.EmployeeCreateDTO{}, nil),
+		pages.ClientCreateForm(types.ClientCreateDTO{}, nil),
 		pages.OobNewClient(*client),
 	)
 }
 
 func (h *ClientHandler) ClientDetailPage(w http.ResponseWriter, r *http.Request) {
-	client, err := h.svc.GetClientById(r.Context(), r.PathValue("id"))
+	client, err := h.clientSVC.GetClientById(r.Context(), r.PathValue("id"))
+	if err != nil {
+		httputil.RenderError(w, r, err, nil)
+		return
+	}
+
+	procedures, err := h.procedureSVC.ListProcedures(r.Context())
 	if err != nil {
 		httputil.RenderError(w, r, err, nil)
 		return
 	}
 
 	httputil.RenderPage(w, r, func(b bool) templ.Component {
-		return pages.ClientDetailPage(b, *client)
+		return pages.ClientDetailPage(b, *client, procedures)
 	})
 }
 
@@ -106,7 +115,7 @@ func (h *ClientHandler) EditClientAction(w http.ResponseWriter, r *http.Request)
 		},
 	}
 
-	client, err := h.svc.UpdateClinetById(r.Context(), id, payload)
+	client, err := h.clientSVC.UpdateClinetById(r.Context(), id, payload)
 	if err != nil {
 		httputil.RenderError(w, r, err, func(e errors.ServerError) templ.Component {
 			return pages.ClientEditForm(id, payload, e.Errors)
@@ -118,5 +127,33 @@ func (h *ClientHandler) EditClientAction(w http.ResponseWriter, r *http.Request)
 		w, r, http.StatusOK,
 		pages.ClientEditForm(id, payload, nil),
 		pages.OobClientUpdated(*client),
+	)
+}
+
+func (h *ClientHandler) CreateClientProcedureAction(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+	clientID := r.PathValue("id")
+	payload := types.ClientProcedureCreateDTO{
+		ClientID:    clientID,
+		ProcedureID: r.Form.Get("procedureId"),
+		DoneAt:      r.Form.Get("doneAt"),
+		Description: r.Form.Get("description"),
+	}
+
+	log.Println(payload)
+	p, err := h.clientProcedureSVC.CreateClientProcedure(r.Context(), payload)
+	log.Println(p)
+	if err != nil {
+		httputil.RenderError(w, r, err, func(e errors.ServerError) templ.Component {
+			log.Println(payload)
+			return pages.ClientProcessCreateForm(clientID, payload, e.Errors)
+		})
+		return
+	}
+
+	httputil.Render(
+		w, r, http.StatusCreated,
+		pages.ClientProcessCreateForm(clientID, payload, nil),
+		// pages.OobNewClient(*client),
 	)
 }

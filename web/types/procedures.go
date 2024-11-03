@@ -1,6 +1,6 @@
 package types
 
 type Procedure struct {
-	ID   string
-	Name string
+	ID   string `json:"id"`
+	Name string `json:"name"`
 }

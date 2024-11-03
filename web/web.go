@@ -37,13 +37,25 @@ func (s *WebServer) Start() error {
 	homeHandler := handlers.NewHomeHandler()
 	server.HandleFunc("/dashboard", homeHandler.HomePage)
 
+	procedureStore := db.NewProcedureStore(s.db)
+	procedureSVC := services.NewProcedureService(procedureStore)
+	procedureHandler := handlers.NewProcedureHandler(procedureSVC)
+	server.HandleFunc("GET /procedures", procedureHandler.ProceduresPage)
+	server.HandleFunc("POST /procedures/create", procedureHandler.ProcedureCreateAction)
+	server.HandleFunc("PUT /procedures/{id}", procedureHandler.ProcedureEditAction)
+	server.HandleFunc("DELETE /procedures/{id}", procedureHandler.ProcedureDeleteAction)
+
+	clientProcedureStore := db.NewClientProcedureStore(s.db)
+	clientProcedureSVC := services.NewClientProcedureService(clientProcedureStore)
+
 	clientStore := db.NewClientStore(s.db)
 	clientSVC := services.NewClientService(clientStore)
-	clientHandler := handlers.NewClientHandler(clientSVC)
+	clientHandler := handlers.NewClientHandler(clientSVC, procedureSVC, clientProcedureSVC)
 	server.HandleFunc("GET /clients", clientHandler.ClientsPage)
 	server.HandleFunc("POST /clients/create", clientHandler.CreateClientAction)
 	server.HandleFunc("GET /clients/{id}", clientHandler.ClientDetailPage)
 	server.HandleFunc("PUT /clients/{id}", clientHandler.EditClientAction)
+	server.HandleFunc("POST /clients/{id}/procedures", clientHandler.CreateClientProcedureAction)
 
 	employeeStore := db.NewEmployeeStore(s.db)
 	employeeSvc := services.NewEmployeeService(employeeStore)
@@ -52,14 +64,6 @@ func (s *WebServer) Start() error {
 	server.HandleFunc("POST /employees/create", employeeHandler.EmployeeCreateAction)
 	server.HandleFunc("PUT /employees/{id}", employeeHandler.EmployeeEditAction)
 	server.HandleFunc("DELETE /employees/{id}", employeeHandler.EmployeeDeleteAction)
-
-	procedureStore := db.NewProcedureStore(s.db)
-	procedureSvc := services.NewProcedureService(procedureStore)
-	procedureHandler := handlers.NewProcedureHandler(procedureSvc)
-	server.HandleFunc("GET /procedures", procedureHandler.ProceduresPage)
-	server.HandleFunc("POST /procedures/create", procedureHandler.ProcedureCreateAction)
-	server.HandleFunc("PUT /procedures/{id}", procedureHandler.ProcedureEditAction)
-	server.HandleFunc("DELETE /procedures/{id}", procedureHandler.ProcedureDeleteAction)
 
 	authHandler := handlers.NewAuthHandler()
 	server.HandleFunc("GET /login", authHandler.LoginPage)

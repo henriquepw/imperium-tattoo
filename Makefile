@@ -43,7 +43,6 @@ clean:
 	@rm -f main
 
 
-
 # run templ generation in watch mode to detect all .templ files and 
 # re-create _templ.txt files on change, then send reload event to browser. 
 # Default url: http://localhost:7331
@@ -82,6 +81,6 @@ watch/sync_assets:
 
 # start all 4 watch processes in parallel.
 .PHONY: watch
-watch: 
+start: 
 	make -j4 watch/templ watch/server watch/tailwind watch/sync_assets
 

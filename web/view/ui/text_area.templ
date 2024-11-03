@@ -1,0 +1,50 @@
+package ui
+
+import "fmt"
+
+type TextAreaOps struct {
+	Label       string
+	Error       string
+	Class       string
+	Name        string
+	Value       string
+	XValue      string
+	Type        string
+	Placeholder string
+	Mask        string
+	Required    bool
+	EnterHint   string
+}
+
+templ TextArea(ops TextAreaOps) {
+	@FormField(ops.Name, ops.Label, ops.Error, ops.Required, ops.Class) {
+		<textarea
+			rows="4"
+			class="input resize-vertical"
+			a={ fmt.Sprint(ops.Value) }
+			name={ ops.Name }
+			type={ ops.Type }
+			placeholder={ ops.Placeholder }
+			if ops.Mask !="" {
+				x-mask={ ops.Mask }
+			}
+			if ops.Error !="" {
+				aria-invalid="true"
+				aria-errormessage={ ops.Error }
+			}
+			if ops.Value !="" {
+				value={ ops.Value }
+			}
+			if ops.XValue !="" {
+				:value={ ops.XValue }
+				x-text={ ops.XValue }
+			}
+			required?={ ops.Required }
+			if ops.EnterHint !="" {
+				enterkeyhint={ ops.EnterHint }
+			} else {
+				enterkeyhint="next"
+			}
+		>{ ops.Value }</textarea>
+	}
+}

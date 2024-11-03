@@ -23,7 +23,7 @@ templ clientRow(i types.Client) {
 
 templ ClientsPage(boosted bool, items []types.Client) {
 	@layout.Dashbaord("Painel", boosted) {
-		<div x-data={ fmt.Sprintf("{createOpen: true, client: null, count: %d}", len(items)) }>
+		<div x-data={ fmt.Sprintf("{createOpen: false, client: null, count: %d}", len(items)) }>
 			@layout.PageHeader("Clientes", []ui.BreadcrumbItem{
 				{Label: "Clientes", Href: "/clients"},
 			}) {

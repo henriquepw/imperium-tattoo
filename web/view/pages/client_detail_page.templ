@@ -60,7 +60,7 @@ templ ClientDetailSection(client types.Client) {
 	</div>
 }
 
-templ ClientDetailPage(boosted bool, client types.Client) {
+templ ClientDetailPage(boosted bool, client types.Client, procedures []types.Procedure) {
 	@layout.Dashbaord(client.Name, boosted) {
 		<div x-data="{editOpen:false}">
 			@layout.PageHeader(client.Name, []ui.BreadcrumbItem{
@@ -74,14 +74,7 @@ templ ClientDetailPage(boosted bool, client types.Client) {
 			<section id="client-section" class="space-y-4">
 				@ClientDetailSection(client)
 			</section>
-			<section class="mt-6">
-				<div class="row mb-4">
-					<h2 class="text-2xl flex-1 font-bold">Procedimentos</h2>
-					<button type="button" class="btn-primary">
-						@ui.Icon("plus")
-					</button>
-				</div>
-			</section>
+			@ClientProcessSection(client.ID, procedures)
 			@ui.Modal("editOpen", "editOpen=false", "Editar Cliente") {
 				@ClientEditForm(client.ID, types.ClientUpdateDTO{
 					Name:      client.Name,
@@ -230,4 +223,81 @@ templ OobClientUpdated(c types.Client) {
 	<section id="client-section" class="space-y-4" hx-swap-oob="outerHTML">
 		@ClientDetailSection(c)
 	</section>
+}
+
+func parseProcedures(items []types.Procedure) string {
+	result := "["
+	for _, p := range items {
+		result = result + fmt.Sprintf("{id:'%s',name:'%s'},", p.ID, p.Name)
+	}
+	result = result + "]"
+
+	return result
+}
+
+templ ClientProcessSection(id string, procedures []types.Procedure) {
+	<section class="mt-6" x-data={ "{ newProcedureOpen: true, procedures:" + parseProcedures(procedures) + " }" }>
+		<div class="row mb-4">
+			<h2 class="text-2xl flex-1 font-bold">Procedimentos</h2>
+			<button type="button" class="btn-primary" @click="newProcedureOpen = true">
+				@ui.Icon("plus")
+			</button>
+		</div>
+		@ClientProcessTable()
+		@ui.Modal("newProcedureOpen", "newProcedureOpen=false", "Registrar Procedimento") {
+			@ClientProcessCreateForm(id, types.ClientProcedureCreateDTO{}, nil)
+		}
+	</section>
+}
+
+templ ClientProcessTable() {
+	TODO
+}
+
+templ ClientProcessCreateForm(id string, values types.ClientProcedureCreateDTO, errors map[string]string) {
+	<form
+		hx-post={ "/clients/" + id + "/procedures" }
+		hx-target="this"
+		hx-swap="outerHTML"
+		hx-indicator="this"
+		class="flex flex-col gap-4 group [&.htmx-request]:pointer-events-none"
+		@htmx:before-swap="(e) => {
+      if (e.detail.xhr.status === 201) {
+        newProcedureOpen = false;
+      }
+    }"
+	>
+		<div
+			class="row"
+			x-data={ fmt.Sprintf("{selectedProcedure:'%s'}", values.ProcedureID) }
+		>
+			@ui.FormField("procedureID", "Procedimento", errors["procedureId"], true) {
+				<select class="input" name="procedureId">
+					<option value="">Selecione um procedimento</option>
+					<template x-for="p in procedures">
+						<option :value="p.id" x-text="p.name" :selected="p.id == selectedProcedure"></option>
+					</template>
+				</select>
+			}
+			@ui.TextInput(ui.TextInputOps{
+				Required: true,
+				Label:    "Data de Realização",
+				Name:     "doneAt",
+				Type:     "date",
+				Value:    values.DoneAt,
+				Error:    errors["doneAt"],
+			})
+		</div>
+		@ui.TextArea(ui.TextAreaOps{
+			Required:    true,
+			Label:       "Descrição",
+			Name:        "description",
+			Placeholder: "Descreva como foi o procedimento, quais matérias foram usados, etc",
+			Value:       values.Description,
+			Error:       errors["description"],
+		})
+		@ui.SubmitBtn("save", "Salvando...", "ml-auto") {
+			Salvar
+		}
+	</form>
 }
