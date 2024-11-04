@@ -17,7 +17,7 @@ type TextInputOps struct {
 templ TextInput(ops TextInputOps) {
 	@FormField(ops.Name, ops.Label, ops.Error, ops.Required, ops.Class) {
 		<input
-			class="input"
+			class="input flex-grow"
 			name={ ops.Name }
 			type={ ops.Type }
 			placeholder={ ops.Placeholder }

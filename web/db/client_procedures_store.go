@@ -61,6 +61,8 @@ func (s *clientProcedureStore) List(ctx context.Context, clientID string) ([]typ
       LEFT JOIN procedure p ON cp.procedure_id = p.id
     WHERE
       cp.client_id = ?
+    ORDER BY
+      cp.done_at ASC
   `
 	rows, err := s.db.QueryContext(ctx, query, clientID)
 	if err != nil {

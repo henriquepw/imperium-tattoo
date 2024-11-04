@@ -60,7 +60,12 @@ templ ClientDetailSection(client types.Client) {
 	</div>
 }
 
-templ ClientDetailPage(boosted bool, client types.Client, procedures []types.Procedure, clientProcedures []types.ClientProcedure) {
+templ ClientDetailPage(
+	boosted bool,
+	client types.Client,
+	procedures []types.Procedure,
+	clientProcedures []types.ClientProcedure,
+) {
 	@layout.Dashbaord(client.Name, boosted) {
 		<div x-data="{editOpen:false}">
 			@layout.PageHeader(client.Name, []ui.BreadcrumbItem{
@@ -71,7 +76,7 @@ templ ClientDetailPage(boosted bool, client types.Client, procedures []types.Pro
 					@ui.Icon("edit")
 				</button>
 			}
-			<section id="client-section" class="space-y-4">
+			<section id="client-section" class="column">
 				@ClientDetailSection(client)
 			</section>
 			@ClientProcessSection(client.ID, procedures, clientProcedures)
@@ -236,39 +241,51 @@ func parseProcedures(items []types.Procedure) string {
 }
 
 templ ClientProcessSection(id string, procedures []types.Procedure, clientProcedures []types.ClientProcedure) {
-	<section class="mt-6" x-data={ "{ newProcedureOpen: false, procedures:" + parseProcedures(procedures) + " }" }>
+	<section class="mt-6 mb-10" x-data={ "{ newProcedureOpen: false, procedures:" + parseProcedures(procedures) + " }" }>
 		<div class="row mb-4">
 			<h2 class="text-2xl flex-1 font-bold">Procedimentos</h2>
-			<button type="button" class="btn-primary" @click="newProcedureOpen = true">
-				@ui.Icon("plus")
-			</button>
 		</div>
 		@ClientProcedureList(clientProcedures)
 		@ui.Modal("newProcedureOpen", "newProcedureOpen=false", "Registrar Procedimento") {
 			@ClientProcessCreateForm(id, types.ClientProcedureCreateDTO{}, nil)
 		}
+		<button
+			type="button"
+			class="btn-primary fixed bottom-4 right-4 rounded-full p-0 w-12 h-12 shadow-sm shadow-gray-6"
+			@click="newProcedureOpen = true"
+		>
+			@ui.Icon("plus")
+		</button>
 	</section>
 }
 
 templ clientProcedureItem(p types.ClientProcedure) {
-	<li class="card">{ p.Description }</li>
+	<li class="flex flex-col items-start gap-1">
+		<span class="text-sm text-gray-11" x-text={ formatDate(p.DoneAt) }></span>
+		<span class="text-sm text-accent-12 bg-accent-3 border border-accent-6 px-1 rounded">
+			{ p.Procedure }
+		</span>
+		<span class="font-medium">{ p.Description }</span>
+	</li>
 }
 
 templ ClientProcedureList(procedures []types.ClientProcedure) {
-	<ul class="space-y-2">
-		if len(procedures) == 0 {
-			<li class="card bg-warning-2 border-warning-7">
-				<div class="text-center text-warning-12">
-					Nenhum procedimento cadastrado
-				</div>
-			</li>
-		}
-		for _, i := range procedures {
-			<tr id={ "client-procedures-" + i.ID } class="group [&.htmx-request]:hidden">
-				@clientProcedureItem(i)
-			</tr>
-		}
-	</ul>
+	if len(procedures) == 0 {
+		<div class="card bg-warning-2 border-warning-7">
+			<p class="text-center text-warning-12">
+				Nenhum procedimento cadastrado
+			</p>
+		</div>
+	} else {
+		<div class="flex w-full items-stratch">
+			<div class="w-0.5 bg-accent-8 mr-4 rounded"></div>
+			<ul class="space-y-6 flex-1">
+				for _, i := range procedures {
+					@clientProcedureItem(i)
+				}
+			</ul>
+		</div>
+	}
 }
 
 templ ClientProcessCreateForm(id string, values types.ClientProcedureCreateDTO, errors map[string]string) {
@@ -284,12 +301,9 @@ templ ClientProcessCreateForm(id string, values types.ClientProcedureCreateDTO, 
       }
     }"
 	>
-		<div
-			class="row"
-			x-data={ fmt.Sprintf("{selectedProcedure:'%s'}", values.ProcedureID) }
-		>
+		<div class="row" x-data={ fmt.Sprintf("{selectedProcedure:'%s'}", values.ProcedureID) }>
 			@ui.FormField("procedureID", "Procedimento", errors["procedureId"], true) {
-				<select class="input" name="procedureId">
+				<select class="input h-9" name="procedureId">
 					<option value="">Selecione um procedimento</option>
 					<template x-for="p in procedures">
 						<option :value="p.id" x-text="p.name" :selected="p.id == selectedProcedure"></option>
