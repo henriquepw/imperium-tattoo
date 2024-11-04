@@ -9,6 +9,7 @@ type ClientProcedure struct {
 	ID          string
 	ClientID    string
 	ProcedureID string
+	Procedure   string
 	Description string
 }
 

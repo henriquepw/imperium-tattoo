@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/henriquepw/imperium-tattoo/pkg/customid"
@@ -14,6 +15,7 @@ import (
 
 type ClientProcedureService interface {
 	CreateClientProcedure(ctx context.Context, dto types.ClientProcedureCreateDTO) (*types.ClientProcedure, error)
+	ListClientProcedures(ctx context.Context, clientID string) ([]types.ClientProcedure, error)
 }
 
 type clientProcedureService struct {
@@ -60,4 +62,14 @@ func (s *clientProcedureService) CreateClientProcedure(ctx context.Context, dto 
 	}
 
 	return &procedure, nil
+}
+
+func (s *clientProcedureService) ListClientProcedures(ctx context.Context, clientID string) ([]types.ClientProcedure, error) {
+	procedures, err := s.store.List(ctx, clientID)
+	if err != nil {
+		log.Println(err)
+		return nil, errors.Internal("Não foi possível listar os procedimentos desse cliente")
+	}
+
+	return procedures, nil
 }

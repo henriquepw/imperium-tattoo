@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"database/sql"
+	"time"
 
 	"github.com/henriquepw/imperium-tattoo/pkg/date"
 	"github.com/henriquepw/imperium-tattoo/web/types"
@@ -49,7 +50,46 @@ func (s *clientProcedureStore) Insert(ctx context.Context, c types.ClientProcedu
 }
 
 func (s *clientProcedureStore) List(ctx context.Context, clientID string) ([]types.ClientProcedure, error) {
-	return []types.ClientProcedure{}, nil
+	query := `
+    SELECT
+      cp.id,
+      cp.description,
+      cp.done_at,
+      p.name
+    FROM
+      client_procedure cp
+      LEFT JOIN procedure p ON cp.procedure_id = p.id
+    WHERE
+      cp.client_id = ?
+  `
+	rows, err := s.db.QueryContext(ctx, query, clientID)
+	if err != nil {
+		return nil, err
+	}
+
+	items := []types.ClientProcedure{}
+	for rows.Next() {
+		var i types.ClientProcedure
+		doneAt := ""
+		err := rows.Scan(
+			&i.ID,
+			&i.Description,
+			&doneAt,
+			&i.Procedure,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		i.DoneAt, err = time.Parse(time.RFC3339, doneAt)
+		if err != nil {
+			return nil, err
+		}
+
+		items = append(items, i)
+	}
+
+	return items, nil
 }
 
 func (s *clientProcedureStore) Update(ctx context.Context, clientID string, dto types.ClientProcedureUpdateDTO) error {

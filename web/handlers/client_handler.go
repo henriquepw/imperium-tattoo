@@ -72,7 +72,9 @@ func (h *ClientHandler) CreateClientAction(w http.ResponseWriter, r *http.Reques
 }
 
 func (h *ClientHandler) ClientDetailPage(w http.ResponseWriter, r *http.Request) {
-	client, err := h.clientSVC.GetClientById(r.Context(), r.PathValue("id"))
+	id := r.PathValue("id")
+
+	client, err := h.clientSVC.GetClientById(r.Context(), id)
 	if err != nil {
 		httputil.RenderError(w, r, err, nil)
 		return
@@ -84,8 +86,14 @@ func (h *ClientHandler) ClientDetailPage(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	clientProcedures, err := h.clientProcedureSVC.ListClientProcedures(r.Context(), id)
+	if err != nil {
+		httputil.RenderError(w, r, err, nil)
+		return
+	}
+
 	httputil.RenderPage(w, r, func(b bool) templ.Component {
-		return pages.ClientDetailPage(b, *client, procedures)
+		return pages.ClientDetailPage(b, *client, procedures, clientProcedures)
 	})
 }
 
