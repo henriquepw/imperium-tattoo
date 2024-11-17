@@ -57,6 +57,7 @@ func (s *WebServer) Start() error {
 	server.HandleFunc("PUT /clients/{id}", clientHandler.EditClientAction)
 	server.HandleFunc("POST /clients/{id}/procedures", clientHandler.CreateClientProcedureAction)
 	server.HandleFunc("PUT /clients/{id}/procedures/{procedureId}", clientHandler.EditClientProcedureAction)
+	server.HandleFunc("DELETE /clients/{id}/procedures/{procedureId}", clientHandler.DeleteClientProcedureAction)
 
 	employeeStore := db.NewEmployeeStore(s.db)
 	employeeSvc := services.NewEmployeeService(employeeStore)

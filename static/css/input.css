@@ -28,9 +28,19 @@
   }
 
   .btn-primary {
-    @apply flex items-center justify-center gap-1.5 h-9 px-3 rounded bg-accent-9;
+    @apply flex items-center justify-center gap-1.5 h-9 px-3 rounded;
     @apply font-bold text-gray-12 text-center;
-    @apply transition-all hover:bg-accent-10 active:bg-accent-11 active:scale-95;
+    @apply transition-all active:scale-95;
+
+    @apply bg-accent-9 hover:bg-accent-10 active:bg-accent-11;
+  }
+
+  .btn-alert {
+    @apply flex items-center justify-center gap-1.5 h-9 px-3 rounded;
+    @apply font-bold text-gray-12 text-center;
+    @apply transition-all active:scale-95;
+
+    @apply bg-error-9 hover:bg-error-10 active:bg-error-11;
   }
 
   .input {

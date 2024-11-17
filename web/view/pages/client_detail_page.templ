@@ -266,6 +266,10 @@ templ ClientProcessSection(id string, procedures []types.Procedure, clientProced
 	</section>
 }
 
+templ OobDeleteClientProcedure(id string) {
+	<template hx-swap-oob="outerHTML" id={ "client-procedure-" + id }></template>
+}
+
 templ OobUpdateClientProcedure(p types.ClientProcedure) {
 	<li
 		hx-swap-oob="outerHTML"
@@ -357,9 +361,27 @@ templ ClientProcessEditForm(errors map[string]string) {
 			XValue:      "procedure?.description",
 			Error:       errors["description"],
 		})
-		@ui.SubmitBtn("save", "Salvando...", "ml-auto") {
-			Salvar
-		}
+		<div class="flex justify-between">
+			<button
+				x-init="$watch('procedure', () => htmx.process($el))"
+				:hx-delete="`/clients/${clientId}/procedures/${procedure?.id}`"
+				hx-indicator="this"
+				class="btn-alert group"
+				type="button"
+			>
+				<div class="items-center gap-1.5 hidden group-[.htmx-request]:flex">
+					@ui.Icon("loader", "h-5 w-5 animate-spin")
+					Deletando...
+				</div>
+				<div class="flex gap-1.5 group-[.htmx-request]:hidden">
+					@ui.Icon("trash")
+					Deletar
+				</div>
+			</button>
+			@ui.SubmitBtn("save", "Salvando...", "ml-auto") {
+				Salvar
+			}
+		</div>
 	</form>
 }
 

@@ -14,6 +14,7 @@ type ClientProcedureStore interface {
 	Update(ctx context.Context, dto types.ClientProcedureUpdateDTO) error
 	List(ctx context.Context, clientID string) ([]types.ClientProcedure, error)
 	Get(ctx context.Context, procedureID string) (*types.ClientProcedure, error)
+	Delete(ctx context.Context, id string) error
 }
 
 type clientProcedureStore struct {
@@ -155,4 +156,9 @@ func (s *clientProcedureStore) Update(ctx context.Context, dto types.ClientProce
 	)
 
 	return error
+}
+
+func (s *clientProcedureStore) Delete(ctx context.Context, id string) error {
+	_, err := s.db.ExecContext(ctx, "DELETE FROM client_procedure WHERE id = ?", id)
+	return err
 }

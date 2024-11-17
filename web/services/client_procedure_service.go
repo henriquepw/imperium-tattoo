@@ -17,6 +17,7 @@ type ClientProcedureService interface {
 	CreateClientProcedure(ctx context.Context, dto types.ClientProcedureCreateDTO) (*types.ClientProcedure, error)
 	EditClientProcedure(ctx context.Context, dto types.ClientProcedureUpdateDTO) (*types.ClientProcedure, error)
 	ListClientProcedures(ctx context.Context, clientID string) ([]types.ClientProcedure, error)
+	DeleteClientProcedure(ctx context.Context, id string) error
 }
 
 type clientProcedureService struct {
@@ -91,4 +92,8 @@ func (s *clientProcedureService) EditClientProcedure(ctx context.Context, dto ty
 	}
 
 	return p, nil
+}
+
+func (s *clientProcedureService) DeleteClientProcedure(ctx context.Context, id string) error {
+	return s.store.Delete(ctx, id)
 }

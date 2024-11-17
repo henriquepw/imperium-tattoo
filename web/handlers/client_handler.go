@@ -198,3 +198,20 @@ func (h *ClientHandler) CreateClientProcedureAction(w http.ResponseWriter, r *ht
 		// pages.OobNewClient(*client),
 	)
 }
+
+func (h *ClientHandler) DeleteClientProcedureAction(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("procedureId")
+	err := h.clientProcedureSVC.DeleteClientProcedure(r.Context(), id)
+	if err != nil {
+		httputil.RenderError(w, r, err, func(e errors.ServerError) templ.Component {
+			return pages.ClientProcessEditForm(e.Errors)
+		})
+		return
+	}
+
+	httputil.Render(
+		w, r, http.StatusOK,
+		pages.ClientProcessEditForm(nil),
+		pages.OobDeleteClientProcedure(id),
+	)
+}
