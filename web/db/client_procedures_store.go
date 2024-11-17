@@ -11,8 +11,9 @@ import (
 
 type ClientProcedureStore interface {
 	Insert(ctx context.Context, item types.ClientProcedure) error
-	Update(ctx context.Context, id string, dto types.ClientProcedureUpdateDTO) error
+	Update(ctx context.Context, dto types.ClientProcedureUpdateDTO) error
 	List(ctx context.Context, clientID string) ([]types.ClientProcedure, error)
+	Get(ctx context.Context, procedureID string) (*types.ClientProcedure, error)
 }
 
 type clientProcedureStore struct {
@@ -55,6 +56,7 @@ func (s *clientProcedureStore) List(ctx context.Context, clientID string) ([]typ
       cp.id,
       cp.description,
       cp.done_at,
+      cp.procedure_id,
       p.name
     FROM
       client_procedure cp
@@ -77,6 +79,7 @@ func (s *clientProcedureStore) List(ctx context.Context, clientID string) ([]typ
 			&i.ID,
 			&i.Description,
 			&doneAt,
+			&i.ProcedureID,
 			&i.Procedure,
 		)
 		if err != nil {
@@ -94,6 +97,62 @@ func (s *clientProcedureStore) List(ctx context.Context, clientID string) ([]typ
 	return items, nil
 }
 
-func (s *clientProcedureStore) Update(ctx context.Context, clientID string, dto types.ClientProcedureUpdateDTO) error {
-	return nil
+func (s *clientProcedureStore) Get(ctx context.Context, procedureID string) (*types.ClientProcedure, error) {
+	query := `
+    SELECT
+      cp.id,
+      cp.description,
+      cp.done_at,
+      cp.procedure_id,
+      p.name
+    FROM
+      client_procedure cp
+      LEFT JOIN procedure p ON cp.procedure_id = p.id
+    WHERE
+      cp.id = ?
+  `
+	row := s.db.QueryRowContext(ctx, query, procedureID)
+
+	var procedure types.ClientProcedure
+	doneAt := ""
+	err := row.Scan(
+		&procedure.ID,
+		&procedure.Description,
+		&doneAt,
+		&procedure.ProcedureID,
+		&procedure.Procedure,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	procedure.DoneAt, err = time.Parse(time.RFC3339, doneAt)
+	if err != nil {
+		return nil, err
+	}
+
+	return &procedure, nil
+}
+
+func (s *clientProcedureStore) Update(ctx context.Context, dto types.ClientProcedureUpdateDTO) error {
+	query := `
+  UPDATE client_procedure
+  SET 
+    procedure_id = ?,
+    description = ?,
+    done_at = ?,
+    updated_at = ?
+  WHERE
+    id = ?
+  `
+	_, error := s.db.ExecContext(
+		ctx, query,
+		dto.ProcedureID,
+		dto.Description,
+		date.FormatToISO(dto.DoneAt),
+		date.FormatToISO(time.Now()),
+		dto.ID,
+	)
+
+	return error
 }

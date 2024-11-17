@@ -3,6 +3,26 @@
 @tailwind utilities;
 
 @layer components {
+  *::selection {
+    @apply bg-accent-8 text-white;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-1;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-accent-8;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-accent-10;
+  }
+
   .card {
     @apply bg-gray-2 backdrop-blur border border-gray-7 rounded-lg p-4
   }

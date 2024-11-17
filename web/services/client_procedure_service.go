@@ -15,6 +15,7 @@ import (
 
 type ClientProcedureService interface {
 	CreateClientProcedure(ctx context.Context, dto types.ClientProcedureCreateDTO) (*types.ClientProcedure, error)
+	EditClientProcedure(ctx context.Context, dto types.ClientProcedureUpdateDTO) (*types.ClientProcedure, error)
 	ListClientProcedures(ctx context.Context, clientID string) ([]types.ClientProcedure, error)
 }
 
@@ -72,4 +73,22 @@ func (s *clientProcedureService) ListClientProcedures(ctx context.Context, clien
 	}
 
 	return procedures, nil
+}
+
+func (s *clientProcedureService) EditClientProcedure(ctx context.Context, dto types.ClientProcedureUpdateDTO) (*types.ClientProcedure, error) {
+	if err := validate.CheckPayload(dto); err != nil {
+		return nil, err
+	}
+
+	err := s.store.Update(ctx, dto)
+	if err != nil {
+		return nil, errors.Internal("Não foi possível editar o procedimento")
+	}
+
+	p, err := s.store.Get(ctx, dto.ID)
+	if err != nil {
+		return nil, errors.Internal("Não foi possível editar o procedimento")
+	}
+
+	return p, nil
 }

@@ -21,6 +21,8 @@ type ClientProcedureCreateDTO struct {
 }
 
 type ClientProcedureUpdateDTO struct {
+	ID          string    `validate:"required,id,len=18"`
 	DoneAt      time.Time `validate:"required"`
 	Description string    `validate:"required,min=5"`
+	ProcedureID string    `validate:"required,id,len=18"`
 }

@@ -56,6 +56,7 @@ func (s *WebServer) Start() error {
 	server.HandleFunc("GET /clients/{id}", clientHandler.ClientDetailPage)
 	server.HandleFunc("PUT /clients/{id}", clientHandler.EditClientAction)
 	server.HandleFunc("POST /clients/{id}/procedures", clientHandler.CreateClientProcedureAction)
+	server.HandleFunc("PUT /clients/{id}/procedures/{procedureId}", clientHandler.EditClientProcedureAction)
 
 	employeeStore := db.NewEmployeeStore(s.db)
 	employeeSvc := services.NewEmployeeService(employeeStore)

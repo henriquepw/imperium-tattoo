@@ -3,7 +3,7 @@ module github.com/henriquepw/imperium-tattoo
 go 1.23.1
 
 require (
-	github.com/a-h/templ v0.2.771
+	github.com/a-h/templ v0.2.793
 	github.com/go-playground/validator/v10 v10.22.0
 	github.com/joho/godotenv v1.5.1
 	github.com/matoous/go-nanoid/v2 v2.1.0
