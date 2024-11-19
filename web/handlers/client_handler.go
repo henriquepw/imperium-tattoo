@@ -12,7 +12,7 @@ import (
 	"github.com/henriquepw/imperium-tattoo/pkg/httputil"
 	"github.com/henriquepw/imperium-tattoo/web/services"
 	"github.com/henriquepw/imperium-tattoo/web/types"
-	"github.com/henriquepw/imperium-tattoo/web/view/pages"
+	clientview "github.com/henriquepw/imperium-tattoo/web/view/client_view"
 )
 
 type ClientHandler struct {
@@ -29,12 +29,12 @@ func (h *ClientHandler) ClientsPage(w http.ResponseWriter, r *http.Request) {
 	clients, err := h.clientSVC.ListClients(r.Context())
 	if err != nil {
 		httputil.RenderError(w, r, err, func(e errors.ServerError) templ.Component {
-			return pages.ClientsPage(r.Header.Get("HX-Boosted") == "true", nil)
+			return clientview.ClientsPage(r.Header.Get("HX-Boosted") == "true", nil)
 		})
 	}
 
 	httputil.RenderPage(w, r, func(b bool) templ.Component {
-		return pages.ClientsPage(b, clients)
+		return clientview.ClientsPage(b, clients)
 	})
 }
 
@@ -61,15 +61,15 @@ func (h *ClientHandler) CreateClientAction(w http.ResponseWriter, r *http.Reques
 	client, err := h.clientSVC.CreateClient(r.Context(), payload)
 	if err != nil {
 		httputil.RenderError(w, r, err, func(e errors.ServerError) templ.Component {
-			return pages.ClientCreateForm(payload, e.Errors)
+			return clientview.ClientCreateForm(payload, e.Errors)
 		})
 		return
 	}
 
 	httputil.Render(
 		w, r, http.StatusCreated,
-		pages.ClientCreateForm(types.ClientCreateDTO{}, nil),
-		pages.OobNewClient(*client),
+		clientview.ClientCreateForm(types.ClientCreateDTO{}, nil),
+		clientview.OobNewClient(*client),
 	)
 }
 
@@ -78,7 +78,7 @@ func (h *ClientHandler) EditClientProcedureAction(w http.ResponseWriter, r *http
 	doneAt, err := time.Parse(time.DateOnly, r.Form.Get("doneAt"))
 	if err != nil {
 		fmt.Print(err)
-		httputil.Render(w, r, http.StatusBadRequest, pages.ClientProcessEditForm(map[string]string{"doneAt": "Data inválida"}))
+		httputil.Render(w, r, http.StatusBadRequest, clientview.ClientProcessEditForm(map[string]string{"doneAt": "Data inválida"}))
 		return
 	}
 
@@ -92,15 +92,15 @@ func (h *ClientHandler) EditClientProcedureAction(w http.ResponseWriter, r *http
 	p, err := h.clientProcedureSVC.EditClientProcedure(r.Context(), payload)
 	if err != nil {
 		httputil.RenderError(w, r, err, func(e errors.ServerError) templ.Component {
-			return pages.ClientProcessEditForm(e.Errors)
+			return clientview.ClientProcessEditForm(e.Errors)
 		})
 		return
 	}
 
 	httputil.Render(
 		w, r, http.StatusOK,
-		pages.ClientProcessEditForm(nil),
-		pages.OobUpdateClientProcedure(*p),
+		clientview.ClientProcessEditForm(nil),
+		clientview.OobUpdateClientProcedure(*p),
 	)
 }
 
@@ -126,7 +126,7 @@ func (h *ClientHandler) ClientDetailPage(w http.ResponseWriter, r *http.Request)
 	}
 
 	httputil.RenderPage(w, r, func(b bool) templ.Component {
-		return pages.ClientDetailPage(b, *client, procedures, clientProcedures)
+		return clientview.ClientDetailPage(b, *client, procedures, clientProcedures)
 	})
 }
 
@@ -159,15 +159,15 @@ func (h *ClientHandler) EditClientAction(w http.ResponseWriter, r *http.Request)
 	client, err := h.clientSVC.UpdateClinetById(r.Context(), id, payload)
 	if err != nil {
 		httputil.RenderError(w, r, err, func(e errors.ServerError) templ.Component {
-			return pages.ClientEditForm(id, payload, e.Errors)
+			return clientview.ClientEditForm(id, payload, e.Errors)
 		})
 		return
 	}
 
 	httputil.Render(
 		w, r, http.StatusOK,
-		pages.ClientEditForm(id, payload, nil),
-		pages.OobClientUpdated(*client),
+		clientview.ClientEditForm(id, payload, nil),
+		clientview.OobClientUpdated(*client),
 	)
 }
 
@@ -187,14 +187,14 @@ func (h *ClientHandler) CreateClientProcedureAction(w http.ResponseWriter, r *ht
 	if err != nil {
 		httputil.RenderError(w, r, err, func(e errors.ServerError) templ.Component {
 			log.Println(payload)
-			return pages.ClientProcessCreateForm(clientID, payload, e.Errors)
+			return clientview.ClientProcessCreateForm(clientID, payload, e.Errors)
 		})
 		return
 	}
 
 	httputil.Render(
 		w, r, http.StatusCreated,
-		pages.ClientProcessCreateForm(clientID, payload, nil),
+		clientview.ClientProcessCreateForm(clientID, payload, nil),
 		// pages.OobNewClient(*client),
 	)
 }
@@ -204,14 +204,14 @@ func (h *ClientHandler) DeleteClientProcedureAction(w http.ResponseWriter, r *ht
 	err := h.clientProcedureSVC.DeleteClientProcedure(r.Context(), id)
 	if err != nil {
 		httputil.RenderError(w, r, err, func(e errors.ServerError) templ.Component {
-			return pages.ClientProcessEditForm(e.Errors)
+			return clientview.ClientProcessEditForm(e.Errors)
 		})
 		return
 	}
 
 	httputil.Render(
 		w, r, http.StatusOK,
-		pages.ClientProcessEditForm(nil),
-		pages.OobDeleteClientProcedure(id),
+		clientview.ClientProcessEditForm(nil),
+		clientview.OobDeleteClientProcedure(id),
 	)
 }

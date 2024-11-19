@@ -1,4 +1,4 @@
-package pages
+package clientview
 
 import (
 	"fmt"
@@ -6,20 +6,6 @@ import (
 	"github.com/henriquepw/imperium-tattoo/web/view/layout"
 	"github.com/henriquepw/imperium-tattoo/web/view/ui"
 )
-
-templ clientRow(i types.Client) {
-	<td>
-		<a class="underline text-accent-11" href={ templ.SafeURL("/clients/" + i.ID) }>
-			{ i.Name }
-		</a>
-	</td>
-	<td>
-		{ i.Email }
-	</td>
-	<td class="whitespace-nowrap">
-		{ i.Phone }
-	</td>
-}
 
 templ ClientsPage(boosted bool, items []types.Client) {
 	@layout.Dashbaord("Painel", boosted) {

@@ -1,0 +1,17 @@
+package clientview
+
+import "github.com/henriquepw/imperium-tattoo/web/types"
+
+templ clientRow(i types.Client) {
+	<td>
+		<a class="underline text-accent-11" href={ templ.SafeURL("/clients/" + i.ID) }>
+			{ i.Name }
+		</a>
+	</td>
+	<td>
+		{ i.Email }
+	</td>
+	<td class="whitespace-nowrap">
+		{ i.Phone }
+	</td>
+}

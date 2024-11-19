@@ -1,0 +1,51 @@
+package clientview
+
+import (
+	"github.com/henriquepw/imperium-tattoo/web/types"
+	"github.com/henriquepw/imperium-tattoo/web/view/ui"
+)
+
+templ ClientDetailSection(client types.Client) {
+	<section x-data="{expanded: false}" class="column">
+		<div x-show="expanded" x-transition class="row">
+			@ui.Tile("Adicionado em") {
+				<span x-text={ ui.FormatDate(client.CreatedAt) }></span>
+			}
+			@ui.Tile("Última atualização em") {
+				<span x-text={ ui.FormatDate(client.UpdatedAt) }></span>
+			}
+		</div>
+		<div class="row">
+			@ui.Tile("CPF", templ.Attributes{"x-show": "expanded", "x-transition": true}) {
+				{ client.CPF }
+			}
+			@ui.Tile("Data de Nascimento", templ.Attributes{"x-show": "expanded"}) {
+				<span x-text={ ui.FormatDate(client.Brithday) }></span>
+			}
+			@ui.Tile("Email", templ.Attributes{"x-show": "expanded", "x-transition": true}) {
+				{ client.Email }
+			}
+		</div>
+		<div class="row">
+			@ui.LinkTile("Whatsapp", "https://api.whatsapp.com/send?phone="+ui.OnlyNumber(client.Phone)) {
+				{ client.Phone }
+			}
+			@ui.LinkTile("Instagram", "https://www.instagram.com/"+client.Instagram) {
+				{ client.Instagram }
+			}
+		</div>
+		<div x-show="expanded" x-transition class="row">
+			@ui.Tile("Endereço") {
+				{ client.Address.ToString() }
+			}
+		</div>
+		<div class="flex justify-center">
+			<button class="rounded border px-2 py-0.5 flex gap-1 items-center" @click="expanded = !expanded">
+				<span x-text="expanded?'menos detalhes':'mais detalhes'"></span>
+				<span :class="expanded?'rotate-180':''">
+					@ui.Icon("chevron-down")
+				</span>
+			</button>
+		</div>
+	</section>
+}

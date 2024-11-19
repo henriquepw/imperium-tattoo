@@ -1,7 +1,7 @@
 package ui
 
-templ Tile(title string, class ...string) {
-	<dl class={ "card flex-1" , class }>
+templ Tile(title string, attrs ...templ.Attributes) {
+	<dl class="card flex-1" { GetAttrs(attrs...)... }>
 		<dt class="font-medium text-accent-12">
 			{ title }
 		</dt>
@@ -11,12 +11,13 @@ templ Tile(title string, class ...string) {
 	</dl>
 }
 
-templ LinkTile(title string, url string, class ...string) {
+templ LinkTile(title string, url string, attrs ...templ.Attributes) {
 	<a
 		target="_blank"
 		rel="noopener noreferrer"
 		href={ templ.SafeURL(url) }
-		class={ "card flex-1 group transition-colors hover-bg-accent-2 hover:border-accent-8" , class, }
+		class="card flex-1 group transition-colors hover-bg-accent-2 hover:border-accent-8"
+		{ GetAttrs(attrs...)... }
 	>
 		<dl>
 			<div class="flex flex-row items-start justify-between">

@@ -24,7 +24,7 @@
   }
 
   .card {
-    @apply bg-gray-2 backdrop-blur border border-gray-7 rounded-lg p-4
+    @apply bg-gray-2 backdrop-blur border border-gray-7 rounded-lg p-3 md:p-4
   }
 
   .btn-primary {

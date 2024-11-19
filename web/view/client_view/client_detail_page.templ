@@ -1,4 +1,4 @@
-package pages
+package clientview
 
 import (
 	"fmt"
@@ -6,59 +6,7 @@ import (
 	"github.com/henriquepw/imperium-tattoo/web/types"
 	"github.com/henriquepw/imperium-tattoo/web/view/layout"
 	"github.com/henriquepw/imperium-tattoo/web/view/ui"
-	"time"
-	"unicode"
 )
-
-func formatDate(dt time.Time) string {
-	return fmt.Sprintf("new Date('%v').toLocaleDateString('pt-BR')", dt)
-}
-
-func onlyNumber(str string) string {
-	num := ""
-	for _, c := range str {
-		if unicode.IsDigit(c) {
-			num = num + string(c)
-		}
-	}
-
-	return num
-}
-
-templ ClientDetailSection(client types.Client) {
-	<di class="row">
-		@ui.Tile("Adicionado em") {
-			<span x-text={ formatDate(client.CreatedAt) }></span>
-		}
-		@ui.Tile("Última atualização em") {
-			<span x-text={ formatDate(client.UpdatedAt) }></span>
-		}
-	</di>
-	<div class="row">
-		@ui.Tile("CPF") {
-			{ client.CPF }
-		}
-		@ui.Tile("Data de Nascimento") {
-			<span x-text={ formatDate(client.Brithday) }></span>
-		}
-		@ui.Tile("Email") {
-			{ client.Email }
-		}
-	</div>
-	<div class="row">
-		@ui.LinkTile("Whatsapp", "https://api.whatsapp.com/send?phone="+onlyNumber(client.Phone)) {
-			{ client.Phone }
-		}
-		@ui.LinkTile("Instagram", "https://www.instagram.com/"+client.Instagram) {
-			{ client.Instagram }
-		}
-	</div>
-	<div class="row">
-		@ui.Tile("Endereço") {
-			{ client.Address.ToString() }
-		}
-	</div>
-}
 
 templ ClientDetailPage(
 	boosted bool,
@@ -285,7 +233,7 @@ templ OobUpdateClientProcedure(p types.ClientProcedure) {
       before:border-2 before:border-accent-8
       before:rounded-full before:left-0 before:top-1/2 before:-translate-x-[1.45rem] before:-translate-y-1/2
     "
-			x-text={ formatDate(p.DoneAt) }
+			x-text={ ui.FormatDate(p.DoneAt) }
 		></span>
 		<span class="text-sm text-accent-12 bg-accent-3 border border-accent-6 px-1 rounded">
 			{ p.Procedure }
@@ -308,7 +256,7 @@ templ clientProcedureItem(p types.ClientProcedure) {
       before:border-2 before:border-accent-8
       before:rounded-full before:left-0 before:top-1/2 before:-translate-x-[1.45rem] before:-translate-y-1/2
     "
-			x-text={ formatDate(p.DoneAt) }
+			x-text={ ui.FormatDate(p.DoneAt) }
 		></span>
 		<span class="text-sm text-accent-12 bg-accent-3 border border-accent-6 px-1 rounded">
 			{ p.Procedure }
