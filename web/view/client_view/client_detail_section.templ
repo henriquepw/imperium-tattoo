@@ -40,7 +40,10 @@ templ ClientDetailSection(client types.Client, attrs ...templ.Attributes) {
 			}
 		</div>
 		<div class="flex justify-center">
-			<button class="rounded border px-2 py-0.5 flex gap-1 items-center" @click="expanded = !expanded">
+			<button
+				class="rounded border px-2 py-0.5 flex gap-1 items-center transition-all hover:bg-gray-2 active:opacity-50"
+				@click="expanded = !expanded"
+			>
 				<span x-text="expanded?'menos detalhes':'mais detalhes'"></span>
 				<span :class="expanded?'rotate-180':''">
 					@ui.Icon("chevron-down")

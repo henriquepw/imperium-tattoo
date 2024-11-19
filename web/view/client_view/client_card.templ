@@ -1,0 +1,25 @@
+package clientview
+
+import (
+	"github.com/henriquepw/imperium-tattoo/web/types"
+	"github.com/henriquepw/imperium-tattoo/web/view/ui"
+)
+
+templ clientCard(i types.Client) {
+	<li>
+		<a
+			class="card flex flex-row gap-3 items-center transition-colors hover:bg-accent-2 hover:border-accent-8"
+			href={ templ.SafeURL("/clients/" + i.ID) }
+		>
+			<div class="flex items-center justify-center rounded-full bg-accent-5 min-h-12 min-w-12">
+				@ui.Icon("user", "h-6 w-6")
+			</div>
+			<div class="column">
+				<span class="leading-none">{ i.Name }</span>
+				<span class="text-gray-11 leading-none">
+					{ i.Phone }
+				</span>
+			</div>
+		</a>
+	</li>
+}

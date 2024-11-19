@@ -16,7 +16,7 @@ templ LinkTile(title string, url string, attrs ...templ.Attributes) {
 		target="_blank"
 		rel="noopener noreferrer"
 		href={ templ.SafeURL(url) }
-		class="card flex-1 group transition-colors hover-bg-accent-2 hover:border-accent-8"
+		class="card flex-1 group transition-colors hover:bg-accent-2 hover:border-accent-8"
 		{ GetAttrs(attrs...)... }
 	>
 		<dl>

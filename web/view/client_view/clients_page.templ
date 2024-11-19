@@ -18,7 +18,12 @@ templ ClientsPage(boosted bool, items []types.Client) {
 				</button>
 			}
 			@layout.WithPageLoad() {
-				@ui.Table() {
+				<ul id="clients-list" class="md:hidden column">
+					for _, i := range items {
+						@clientCard(i)
+					}
+				</ul>
+				@ui.Table("hidden md:table") {
 					<thead class="bg-gray-2">
 						<tr>
 							<td>Cliente</td>
@@ -26,7 +31,7 @@ templ ClientsPage(boosted bool, items []types.Client) {
 							<td>Whatsapp</td>
 						</tr>
 					</thead>
-					<tbody id="clients">
+					<tbody id="clients-table">
 						@ui.TEmpty("Nenhum cliente cadastrado", 3)
 						for _, i := range items {
 							<tr id={ "client-" + i.ID } class="group [&.htmx-request]:hidden">
@@ -183,10 +188,15 @@ templ ClientCreateForm(values types.ClientCreateDTO, errors map[string]string) {
 
 templ OobNewClient(c types.Client) {
 	<template>
-		<tbody hx-swap-oob="beforeend:#clients">
+		<tbody hx-swap-oob="beforeend:#clients-table">
 			<tr id={ "client-" + c.ID } class="group [&.htmx-request]:hidden">
 				@clientRow(c)
 			</tr>
 		</tbody>
+	</template>
+	<template>
+		<ul hx-swap-oob="beforeend:#clients-list" class="column md:hidden">
+			@clientCard(c)
+		</ul>
 	</template>
 }
