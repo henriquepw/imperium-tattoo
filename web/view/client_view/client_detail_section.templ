@@ -5,8 +5,8 @@ import (
 	"github.com/henriquepw/imperium-tattoo/web/view/ui"
 )
 
-templ ClientDetailSection(client types.Client) {
-	<section x-data="{expanded: false}" class="column">
+templ ClientDetailSection(client types.Client, attrs ...templ.Attributes) {
+	<section x-data="{expanded: false}" id="client-section" class="column" { ui.GetAttrs(attrs...)... }>
 		<div x-show="expanded" x-transition class="row">
 			@ui.Tile("Adicionado em") {
 				<span x-text={ ui.FormatDate(client.CreatedAt) }></span>

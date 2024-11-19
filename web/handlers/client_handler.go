@@ -73,37 +73,6 @@ func (h *ClientHandler) CreateClientAction(w http.ResponseWriter, r *http.Reques
 	)
 }
 
-func (h *ClientHandler) EditClientProcedureAction(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
-	doneAt, err := time.Parse(time.DateOnly, r.Form.Get("doneAt"))
-	if err != nil {
-		fmt.Print(err)
-		httputil.Render(w, r, http.StatusBadRequest, clientview.ClientProcessEditForm(map[string]string{"doneAt": "Data inválida"}))
-		return
-	}
-
-	payload := types.ClientProcedureUpdateDTO{
-		ID:          r.PathValue("procedureId"),
-		Description: r.Form.Get("description"),
-		ProcedureID: r.Form.Get("procedureId"),
-		DoneAt:      doneAt,
-	}
-
-	p, err := h.clientProcedureSVC.EditClientProcedure(r.Context(), payload)
-	if err != nil {
-		httputil.RenderError(w, r, err, func(e errors.ServerError) templ.Component {
-			return clientview.ClientProcessEditForm(e.Errors)
-		})
-		return
-	}
-
-	httputil.Render(
-		w, r, http.StatusOK,
-		clientview.ClientProcessEditForm(nil),
-		clientview.OobUpdateClientProcedure(*p),
-	)
-}
-
 func (h *ClientHandler) ClientDetailPage(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 
@@ -181,9 +150,7 @@ func (h *ClientHandler) CreateClientProcedureAction(w http.ResponseWriter, r *ht
 		Description: r.Form.Get("description"),
 	}
 
-	log.Println(payload)
-	p, err := h.clientProcedureSVC.CreateClientProcedure(r.Context(), payload)
-	log.Println(p)
+	_, err := h.clientProcedureSVC.CreateClientProcedure(r.Context(), payload)
 	if err != nil {
 		httputil.RenderError(w, r, err, func(e errors.ServerError) templ.Component {
 			log.Println(payload)
@@ -192,10 +159,50 @@ func (h *ClientHandler) CreateClientProcedureAction(w http.ResponseWriter, r *ht
 		return
 	}
 
+	clientProcedures, err := h.clientProcedureSVC.ListClientProcedures(r.Context(), clientID)
+	if err != nil {
+		httputil.Render(
+			w, r, http.StatusCreated,
+			clientview.ClientProcessCreateForm(clientID, payload, nil),
+		)
+		return
+	}
+
 	httputil.Render(
 		w, r, http.StatusCreated,
 		clientview.ClientProcessCreateForm(clientID, payload, nil),
-		// pages.OobNewClient(*client),
+		clientview.OobNewClientProcedure(clientProcedures),
+	)
+}
+
+func (h *ClientHandler) EditClientProcedureAction(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+	doneAt, err := time.Parse(time.DateOnly, r.Form.Get("doneAt"))
+	if err != nil {
+		fmt.Print(err)
+		httputil.Render(w, r, http.StatusBadRequest, clientview.ClientProcessEditForm(map[string]string{"doneAt": "Data inválida"}))
+		return
+	}
+
+	payload := types.ClientProcedureUpdateDTO{
+		ID:          r.PathValue("procedureId"),
+		Description: r.Form.Get("description"),
+		ProcedureID: r.Form.Get("procedureId"),
+		DoneAt:      doneAt,
+	}
+
+	p, err := h.clientProcedureSVC.EditClientProcedure(r.Context(), payload)
+	if err != nil {
+		httputil.RenderError(w, r, err, func(e errors.ServerError) templ.Component {
+			return clientview.ClientProcessEditForm(e.Errors)
+		})
+		return
+	}
+
+	httputil.Render(
+		w, r, http.StatusOK,
+		clientview.ClientProcessEditForm(nil),
+		clientview.OobUpdateClientProcedure(*p),
 	)
 }
 
